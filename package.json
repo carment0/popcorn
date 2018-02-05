@@ -28,24 +28,27 @@
     "eslint-plugin-react": "^7.3.0"
   },
   "dependencies": {
-    "node-sass": "^4.5.3",
-    "sass-loader": "^6.0.6",
-    "style-loader": "^0.18.2",
-    "webpack": "^3.5.5",
-    "extract-text-webpack-plugin": "^3.0.0",
+    "axios": "^0.16.2",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.0",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-react": "^6.24.1",
-    "babel-preset-env": "^1.6.1",
     "css-loader": "^0.28.7",
-    "axios": "^0.16.2",
+    "extract-text-webpack-plugin": "^3.0.0",
     "material-ui": "^0.19.2",
+    "node-sass": "^4.5.3",
     "prop-types": "^15.5.10",
-    "react": "^15.6.1",
+    "react": "^15.6.2",
     "react-dom": "^15.6.1",
-    "react-redux": "^5.0.6"
+    "react-redux": "^5.0.6",
+    "react-router-dom": "^4.2.2",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.18.2",
+    "webpack": "^3.5.5"
   }
 }

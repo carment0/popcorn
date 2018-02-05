@@ -1,1 +1,1 @@
-web: go install && popcorn
+web: popcorn

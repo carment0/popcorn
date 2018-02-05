@@ -3,12 +3,16 @@ package main
 import (
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"os"
 	"time"
 )
 
-const Addr = ":3000"
-
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = ":3000"
+	}
+
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
 	})
@@ -24,11 +28,11 @@ func main() {
 
 	server := &http.Server{
 		Handler:      LoadRoutes(db),
-		Addr:         Addr,
+		Addr:         port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	logrus.Infof("HTTP server is listening and serving on port %v", Addr)
+	logrus.Infof("HTTP server is listening and serving on port %v", port)
 	logrus.Fatal(server.ListenAndServe())
 }

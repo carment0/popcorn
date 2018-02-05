@@ -1,10 +1,10 @@
 package main
 
 import (
-	"popcorn/handler"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"net/http"
+	"popcorn/handler"
 )
 
 func LoadRoutes(db *gorm.DB) http.Handler {

@@ -17,9 +17,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 // Internal imports
-import RecommenderPage from './containers/RecommenderPage';
-import LandingPage from './containers/LandingPage';
-import NavigationBar from './containers/NavigationBar';
+import RecommenderPage from './containers/recommender_page';
+import LandingPage from './containers/landing_page';
+import NavigationBar from './containers/navigation_bar';
 import RootReducer from './reducers';
 
 

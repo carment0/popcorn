@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"os"
+	"popcorn/model"
 )
 
 const (
@@ -29,7 +30,7 @@ func SetupDatabase() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// db.AutoMigrate()
+	db.AutoMigrate(&model.Movie{})
 
 	return db, nil
 }

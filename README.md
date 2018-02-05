@@ -2,16 +2,30 @@
 Wonder what movie to watch next with your friends and family? Use Popcorn to fetch movie recommendations!
 
 ## Database
-Create a PostgreSQL database for local development
-
-Enter `psql` command line interface
+### Local Development
+Step one, enter `psql` command line interface:
 ```
 psql postgres
 ```
 
-Create a database with owner pointing to your own account
+Check what the users you have in your local Postgres server:
 ```
-create database popcorn_development with owner=carmento;
+\du
+```
+
+If it does not have the user you want, create one:
+```
+create user cto superuser createdb createrole;
+```
+
+Give your new user a password:
+```
+alter user cto with password 'cto';
+```
+
+Now you can go ahead and create a database with owner pointing to a user:
+```
+create database popcorn_development with owner=cto;
 ```
 
 

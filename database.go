@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"go-academy/user_auth/model"
 	"os"
 )
 
@@ -20,7 +19,7 @@ func SetupDatabase() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&model.User{})
+	// db.AutoMigrate()
 
 	return db, nil
 }

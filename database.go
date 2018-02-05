@@ -1,3 +1,6 @@
+// Copyright (c) 2018 Popcorn
+// Author(s) Calvin Feng
+
 package main
 
 import (
@@ -5,11 +8,12 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"os"
+	"popcorn/model"
 )
 
 const (
-	LocalDBUser     = "cto"
-	LocalDBPassword = "cto"
+	LocalDBUser     = "popcorn"
+	LocalDBPassword = "popcorn"
 	LocalDBName     = "popcorn_development"
 	LocalSSLMode    = "disable"
 )
@@ -29,7 +33,7 @@ func SetupDatabase() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// db.AutoMigrate()
+	db.AutoMigrate(&model.Movie{})
 
 	return db, nil
 }

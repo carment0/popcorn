@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	LocalDBUser     = "cto"
-	LocalDBPassword = "cto"
+	LocalDBUser     = "popcorn"
+	LocalDBPassword = "popcorn"
 	LocalDBName     = "popcorn_development"
 	LocalSSLMode    = "disable"
 )

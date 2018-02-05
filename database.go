@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	LocalDBUser     = "carmento"
-	LocalDBPassword = "carmento"
+	LocalDBUser     = "cto"
+	LocalDBPassword = "cto"
 	LocalDBName     = "popcorn_development"
 	LocalSSLMode    = "disable"
 )

@@ -29,5 +29,6 @@
   name = "github.com/sirupsen/logrus"
   version = "1.0.4"
 
-[metadata]
+[metadata.heroku]
 root-package = "github.com/carment0/popcorn"
+go-version = "go1.9.3"

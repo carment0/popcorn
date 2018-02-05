@@ -1,9 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"os"
+)
+
+const (
+	LocalDBUser     = "carmento"
+	LocalDBPassword = "carmento"
+	LocalDBName     = "popcorn_development"
+	LocalSSLMode    = "disable"
 )
 
 // SetupDatabase will perform database connection and auto migration on all gorm.Models
@@ -11,7 +19,9 @@ func SetupDatabase() (*gorm.DB, error) {
 	dbCredentials := os.Getenv("DATABASE_URL")
 
 	if dbCredentials == "" {
-		dbCredentials = "user=carmento password=carmento dbname=popcorn_development sslmode=disable"
+		dbCredentials = fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s",
+			LocalDBUser, LocalDBPassword, LocalDBName, LocalSSLMode,
+		)
 	}
 
 	db, err := gorm.Open("postgres", dbCredentials)

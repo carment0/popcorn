@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -11,6 +12,8 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = ":3000"
+	} else {
+		port = fmt.Sprintf(":%s", port)
 	}
 
 	logrus.SetFormatter(&logrus.TextFormatter{

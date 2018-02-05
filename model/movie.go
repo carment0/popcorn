@@ -1,3 +1,6 @@
+// Copyright (c) 2018 Popcorn
+// Author(s) Calvin Feng
+
 package model
 
 import "github.com/jinzhu/gorm"

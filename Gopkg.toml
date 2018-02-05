@@ -32,5 +32,5 @@
 [metadata.heroku]
 root-package = "popcorn"
 go-version = "go1.9.3"
-install = ["."]
+install = ["./..."]
 ensure = "false"

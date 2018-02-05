@@ -28,3 +28,6 @@
 [[constraint]]
   name = "github.com/sirupsen/logrus"
   version = "1.0.4"
+
+[metadata]
+root-package = "github.com/carment0/popcorn"

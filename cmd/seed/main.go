@@ -5,13 +5,12 @@ package main
 
 import (
 	"fmt"
-	"popcorn/model"
 )
 
 func main() {
-	toyStory := &model.Movie{
-		Title: "Toy Story",
+	if models, err := LoadMovies("dataset/movies.csv"); err != nil {
+		fmt.Println("Fatal", err)
+	} else {
+		fmt.Println(len(models))
 	}
-
-	fmt.Println(toyStory)
 }

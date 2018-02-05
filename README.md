@@ -42,3 +42,47 @@ Quit `psql`:
 ```
 \q
 ```
+
+## Build Project
+### Backend
+Inside your popcorn directory, Run `go install` to build the binary for your server
+``` 
+go install
+```
+
+Run `go install` to build the binaries for other commands 
+```
+go install ./cmd/...
+```
+
+To start the server, simply run
+```
+popcorn
+```
+
+To seed the database, simply run
+```
+seed
+```
+
+Check if your seeds are actually working
+```
+psql popcorn_development
+```
+
+Enter the following SQL command:
+```
+select title from movies;
+```
+
+### Frontend
+Install all the required node modules
+```
+npm install
+```
+
+And then build your scripts and style sheets
+```
+npm run build:watch
+```
+

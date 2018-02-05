@@ -31,4 +31,4 @@
 
 [metadata.heroku]
 root-package = "github.com/carment0/popcorn"
-install = ["./handler"]
+install = ["./handler", "."]

@@ -13,6 +13,8 @@ import (
 type MovieJSONResponse struct {
 	Title string `json:"title"`
 	Year  uint   `json:"year"`
+	NumRating int `json:"num_rating"`
+	AverageRating float64 `json:"average_rating"`
 }
 
 func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {
@@ -28,6 +30,8 @@ func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {
 			res = append(res, &MovieJSONResponse{
 				Title: movie.Title,
 				Year:  movie.Year,
+				NumRating: movie.NumRating,
+				AverageRating: movie.AverageRating,
 			})
 		}
 		if bytes, err := json.Marshal(res); err != nil {
@@ -41,6 +45,26 @@ func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {
 
 func NewMovieMostViewedHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Implementation...
+		var movies []model.Movie
+		if err := db.Order("num_rating desc").Order("average_rating desc").Find(&movies).Error; err != nil {
+			RenderError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		res := []*MovieJSONResponse{}
+		for _, movie := range movies {
+			res = append(res, &MovieJSONResponse{
+				Title: movie.Title,
+				Year:  movie.Year,
+				NumRating: movie.NumRating,
+				AverageRating: movie.AverageRating,
+			})
+		}
+		if bytes, err := json.Marshal(res); err != nil {
+			RenderError(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(http.StatusOK)
+			w.Write(bytes)
+		}
 	}
 }

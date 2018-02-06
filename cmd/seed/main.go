@@ -7,12 +7,9 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"os"
 	"popcorn/model"
-	"regexp"
-	"strconv"
 )
 
 const (
@@ -44,28 +41,21 @@ func main() {
 
 	if db.HasTable(&model.Movie{}) {
 		db.DropTable(&model.Movie{})
-		logrus.Info("Dropped movies table.")
+		logrus.Info("Dropped movies table")
 	}
 
 	db.CreateTable(&model.Movie{})
-	logrus.Info("New movies table is created.")
+	logrus.Info("New movies table is created")
 
-	if movies, err := LoadMovies("dataset/movies.csv"); err != nil {
+	if movies, err := LoadMovieModelsFromCSVData("dataset/movies.csv"); err != nil {
 		fmt.Println("Fatal", err)
 	} else {
-		logrus.Info("Movies are loaded from csv files.")
-
-		r, _ := regexp.Compile("(\\d{4})")
+		logrus.Info("Movies are loaded from csv files")
 
 		count := 0
 		for movieId := range movies {
-			year, parseErr := strconv.ParseInt(r.FindString(movies[movieId].Title), 10, 64)
-			if parseErr == nil {
-				movies[movieId].Year = int(year)
-				movies[movieId].Feature = pq.Float64Array{}
-				if db.Create(movies[movieId]).Error == nil {
-					count += 1
-				}
+			if db.Create(movies[movieId]).Error == nil {
+				count += 1
 			}
 		}
 

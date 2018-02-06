@@ -12,7 +12,7 @@ import (
 
 type MovieJSONResponse struct {
 	Title string `json:"title"`
-	Year int `json:"year"`
+	Year  uint `json:"year"`
 }
 
 func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {

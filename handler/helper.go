@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/jinzhu/gorm"
-	"go-academy/user_auth/model"
+	"popcorn/model"
 	"golang.org/x/crypto/bcrypt"
 )
 

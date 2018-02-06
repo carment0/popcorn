@@ -15,7 +15,7 @@ func NewTokenAuthenticateHandler(db *gorm.DB) http.HandlerFunc {
 		cookie, _ := r.Cookie("session_token")
 		if currentUser, err := FindUserByToken(db, cookie.Value); err == nil {
 			res := UserJSONResponse{
-				Username:     user.Username,
+				Username:     currentUser.Username,
 				SessionToken: currentUser.SessionToken,
 			}
 
@@ -46,7 +46,7 @@ func NewSessionCreateHandler(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		user, err := FindUserByCredential(db, loginReq.Email, loginReq.Password)
+		user, err := FindUserByCredential(db, loginReq.Username, loginReq.Password)
 		if err != nil {
 			RenderError(w, "Incorrect username/password combination", http.StatusUnauthorized)
 			return
@@ -84,8 +84,8 @@ func NewSessionDestroyHandler(db *gorm.DB) http.HandlerFunc {
 			db.Save(currentUser)
 
 			res := &LogoutResponse{
-				Username:     user.Username,
-				isLoggedOut: true,
+				Username:     currentUser.Username,
+				isLoggedOut: 	true,
 			}
 
 			if bytes, err := json.Marshal(res); err != nil {

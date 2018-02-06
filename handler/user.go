@@ -26,7 +26,7 @@ func NewUserCreateHandler(db *gorm.DB) http.HandlerFunc {
 			RenderError(w, "Failed to parse request JSON into struct", http.StatusInternalServerError)
 			return
 		}
-		if len(regReq.Email) == 0 || len(regReq.Password) == 0 || len(regReq.Username) == 0 {
+		if len(regReq.Password) == 0 || len(regReq.Username) == 0 {
 			RenderError(w, "Please provide username and password for registration", http.StatusBadRequest)
 			return
 		}
@@ -49,7 +49,7 @@ func NewUserCreateHandler(db *gorm.DB) http.HandlerFunc {
 		}
 
 		expiration := time.Now().Add(2 * 24 * time.Hour)
-		cookie := http.Cookie{Username: "session_token", Value: newUser.SessionToken, Expires: expiration}
+		cookie := http.Cookie{Name: "session_token", Value: newUser.SessionToken, Expires: expiration}
 		http.SetCookie(w, &cookie)
 
 		res := &UserJSONResponse{

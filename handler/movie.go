@@ -12,7 +12,7 @@ import (
 
 type MovieJSONResponse struct {
 	Title string `json:"title"`
-	Year int `json:"year"`
+	Year  uint   `json:"year"`
 }
 
 func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {
@@ -26,8 +26,8 @@ func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {
 		res := []*MovieJSONResponse{}
 		for _, movie := range movies {
 			res = append(res, &MovieJSONResponse{
-				Title:       movie.Title,
-				Year:        movie.Year,
+				Title: movie.Title,
+				Year:  movie.Year,
 			})
 		}
 		if bytes, err := json.Marshal(res); err != nil {

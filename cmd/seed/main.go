@@ -39,26 +39,58 @@ func main() {
 		logrus.Infof("Connected to database with the following credentials: %s", dbCredentials)
 	}
 
+	var movieModelsMap map[uint]*model.Movie
+	var movieRatingsMap map[uint][]float64
+	var metadataMap map[uint]map[string]string
+	var loadError error
+
+	movieModelsMap, loadError = LoadMoviesCSVFile("dataset/movies.csv")
+	if loadError != nil {
+		logrus.Fatal("Failed to load movie models from CSV data:", loadError)
+		return
+	}
+
+	movieRatingsMap, loadError = LoadRatingsCSVFile("dataset/ratings.csv")
+	if loadError != nil {
+		logrus.Fatal("Failed to load movie ratings from CSV data:", loadError)
+		return
+	}
+
+	metadataMap, loadError = LoadMetadataCSVFile("dataset/links.csv")
+	if loadError != nil {
+		logrus.Fatal("Failed to load movie metadata from CSV data:", loadError)
+		return
+	}
+
+	logrus.Info("Movie and rating data are loaded from csv files")
+
 	if db.HasTable(&model.Movie{}) {
 		db.DropTable(&model.Movie{})
-		logrus.Info("Dropped movies table")
+		logrus.Info("Existing table is dropped: movies")
 	}
 
 	db.CreateTable(&model.Movie{})
-	logrus.Info("New movies table is created")
+	logrus.Info("New table is created: movies")
 
-	if movies, err := LoadMovieModelsFromCSVData("dataset/movies.csv"); err != nil {
-		fmt.Println("Fatal", err)
-	} else {
-		logrus.Info("Movies are loaded from csv files")
+	count := 0
+	for movieId := range movieModelsMap {
+		movie := movieModelsMap[movieId]
 
-		count := 0
-		for movieId := range movies {
-			if db.Create(movies[movieId]).Error == nil {
-				count += 1
-			}
+		if ratingList, ok := movieRatingsMap[movieId]; ok {
+			movie.AverageRating = Average(ratingList)
+			movie.NumRating = len(ratingList)
 		}
 
-		logrus.Infof("Completed seeding %d movies", count)
+		if dict, ok := metadataMap[movieId]; ok {
+			movie.IMDBID = dict["imdb"]
+			movie.TMDBID = dict["tmdb"]
+		}
+
+		if db.Create(movie).Error == nil {
+			count += 1
+		}
 	}
+
+	logrus.Infof("Completed seeding %d movies", count)
+
 }

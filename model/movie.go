@@ -20,6 +20,7 @@ type Movie struct {
 	Title      string  `gorm:"type:varchar(500);index"`
 	Year       uint    `gorm:"type:integer;index"`
 	IMDBID     string  `gorm:"type:varchar(100);column:imdb_id"`
+	TMDBID     string  `gorm:"type:varchar(100);column:tmdb_id"`
 	IMDBRating float64 `gorm:"type:float8;column:imdb_rating"`
 
 	// NumRating is the number of ratings of this movie received from MovieLens dataset, while average rating is the

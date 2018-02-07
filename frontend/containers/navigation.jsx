@@ -10,7 +10,7 @@ import { Nav } from 'react-bootstrap';
 import { NavItem } from 'react-bootstrap';
 import { Navbar } from 'react-bootstrap';
 import Indicator from '../components/indicator';
-import './navigation_bar.scss';
+import './navigation.scss';
 
 
 class Navigation extends React.Component {
@@ -23,10 +23,16 @@ class Navigation extends React.Component {
 
   handleTabSelect = (key) => {
     this.setState({ activeKey: key });
-    if (key === 1) {
-      this.props.history.push('recommendations');
-    } else if (key === 2) {
-      window.open('https://github.com/carment0/popcorn');
+
+    switch (key) {
+      case 1:
+        if (this.props.history.location.pathname !== '/recommend') {
+          this.props.history.push('recommend');
+        }
+        break;
+      case 2:
+        window.open('https://github.com/carment0/popcorn');
+        break;
     }
   };
 

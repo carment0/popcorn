@@ -15,9 +15,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 // Internal imports
-import RecommenderPage from './containers/recommender_page';
-import LandingPage from './containers/landing_page';
-import NavigationBar from './containers/navigation_bar';
+import Recommender from './containers/recommender';
+import Welcome from './containers/welcome';
+import Navigation from './containers/navigation';
 import ReduxStore from './store';
 import './index.scss';
 
@@ -43,9 +43,9 @@ class Application extends React.Component {
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
         <article className="popcorn">
-          <NavigationBar history={this.props.history} />
-          <Route path="/welcome" component={LandingPage} />
-          <Route path="/recommendations" component={RecommenderPage} />
+          <Navigation history={this.props.history} />
+          <Route path="/welcome" component={Welcome} />
+          <Route path="/recommend" component={Recommender} />
         </article>
       </MuiThemeProvider>
     );

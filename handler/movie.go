@@ -1,5 +1,5 @@
 // Copyright (c) 2018 Popcorn
-// Author(s) Calvin Feng
+// Author(s) Carmen To
 
 package handler
 
@@ -10,13 +10,6 @@ import (
 	"popcorn/model"
 )
 
-type MovieJSONResponse struct {
-	Title string `json:"title"`
-	Year  uint   `json:"year"`
-	NumRating int `json:"num_rating"`
-	AverageRating float64 `json:"average_rating"`
-}
-
 func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var movies []model.Movie
@@ -25,16 +18,7 @@ func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		res := []*MovieJSONResponse{}
-		for _, movie := range movies {
-			res = append(res, &MovieJSONResponse{
-				Title: movie.Title,
-				Year:  movie.Year,
-				NumRating: movie.NumRating,
-				AverageRating: movie.AverageRating,
-			})
-		}
-		if bytes, err := json.Marshal(res); err != nil {
+		if bytes, err := json.Marshal(movies); err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 		} else {
 			w.WriteHeader(http.StatusOK)
@@ -51,16 +35,7 @@ func NewMovieMostViewedHandler(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		res := []*MovieJSONResponse{}
-		for _, movie := range movies {
-			res = append(res, &MovieJSONResponse{
-				Title: movie.Title,
-				Year:  movie.Year,
-				NumRating: movie.NumRating,
-				AverageRating: movie.AverageRating,
-			})
-		}
-		if bytes, err := json.Marshal(res); err != nil {
+		if bytes, err := json.Marshal(movies); err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 		} else {
 			w.WriteHeader(http.StatusOK)

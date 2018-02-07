@@ -1,5 +1,5 @@
 // Copyright (c) 2018 Popcorn
-// Author(s) Calvin Feng
+// Author(s) Carmen To
 
 package handler
 
@@ -25,15 +25,15 @@ func NewTokenAuthenticateHandler(db *gorm.DB) http.HandlerFunc {
 				w.WriteHeader(http.StatusOK)
 				w.Write(bytes)
 			}
-		}  else {
+		} else {
 			RenderError(w, err.Error(), http.StatusUnauthorized)
 		}
 	}
 }
 
 type LoginRequest struct {
-	Username    string `json:"username"`
-	Password 		string `json:"password"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func NewSessionCreateHandler(db *gorm.DB) http.HandlerFunc {
@@ -73,7 +73,7 @@ func NewSessionCreateHandler(db *gorm.DB) http.HandlerFunc {
 
 type LogoutResponse struct {
 	Username    string `json:"username"`
-	isLoggedOut bool   `json:"is_logged_out"`
+	IsLoggedOut bool   `json:"is_logged_out"`
 }
 
 func NewSessionDestroyHandler(db *gorm.DB) http.HandlerFunc {
@@ -84,8 +84,8 @@ func NewSessionDestroyHandler(db *gorm.DB) http.HandlerFunc {
 			db.Save(currentUser)
 
 			res := &LogoutResponse{
-				Username:     currentUser.Username,
-				isLoggedOut: 	true,
+				Username:    currentUser.Username,
+				IsLoggedOut: true,
 			}
 
 			if bytes, err := json.Marshal(res); err != nil {

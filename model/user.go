@@ -3,15 +3,15 @@ package model
 import "time"
 
 type User struct {
-  // Model base class attributes
-  ID        uint `gorm:"primary_key"`
-  CreatedAt time.Time
-  UpdatedAt time.Time
+	// Model base class attributes
+	ID        uint      `gorm:"primary_key" json:"-"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 
-  // User base attributes
-	Username        string    `gorm:"type:varchar(100)"json:"name"`
-	SessionToken    string    `gorm:"type:varchar(100);unique_index"json:"session_token"`
-	PasswordDigest  []byte    `gorm:"type:bytea"json:"password_digest"`
+	// User base attributes
+	Username       string `gorm:"type:varchar(100)"              json:"username"`
+	SessionToken   string `gorm:"type:varchar(100);unique_index" json:"-"`
+	PasswordDigest []byte `gorm:"type:bytea"                     json:"-"`
 }
 
 func (u *User) ResetSessionToken() {

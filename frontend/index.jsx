@@ -1,5 +1,5 @@
 /**
- * @copyright Consilium, 2018
+ * @copyright Popcorn, 2018
  * @author Calvin Feng
  */
 
@@ -9,18 +9,17 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { HashRouter, Route } from 'react-router-dom';
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
 
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 // Internal imports
-import RecommenderPage from './containers/recommender_page';
-import LandingPage from './containers/landing_page';
-import NavigationBar from './containers/navigation_bar';
-import RootReducer from './reducers';
+import Recommender from './containers/recommender';
+import Welcome from './containers/welcome';
+import Navigation from './containers/navigation';
+import ReduxStore from './store';
+import './index.scss';
 
 
 class Application extends React.Component {
@@ -42,13 +41,13 @@ class Application extends React.Component {
 
   render() {
     return (
-        <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
-            <article className="consilium">
-                <NavigationBar />
-                <Route path="/welcome" component={LandingPage} />
-                <Route path="/recommendations" component={RecommenderPage} />
-            </article>
-        </MuiThemeProvider>
+      <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
+        <article className="popcorn">
+          <Navigation history={this.props.history} />
+          <Route path="/welcome" component={Welcome} />
+          <Route path="/recommend" component={Recommender} />
+        </article>
+      </MuiThemeProvider>
     );
   }
 }
@@ -61,14 +60,10 @@ const Router = (props) => (
   </Provider>
 );
 
-document.addEventListener("DOMContentLoaded", () => {
-  const preloadedState = {};
+Router.propTypes = {
+  store: PropTypes.object.isRequired
+};
 
-  if (window.currentUser) {
-    preloadedState.sessions = { currentUser: window.currentUser };
-    delete window.currentUser;
-  }
-
-  const reduxStore = createStore(RootReducer)
-  ReactDOM.render(<Router />, document.getElementById('react-application'));
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(<Router store={ReduxStore} />, document.getElementById('react-application'));
 });

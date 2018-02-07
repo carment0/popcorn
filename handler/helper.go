@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/jinzhu/gorm"
-	"popcorn/model"
 	"golang.org/x/crypto/bcrypt"
+	"popcorn/model"
 )
 
 func FindUserByCredential(db *gorm.DB, username, password string) (*model.User, error) {

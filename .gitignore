@@ -8,3 +8,4 @@ bundle.js
 bundle.js.map
 bundle.css
 bundle.css.map
+*.log

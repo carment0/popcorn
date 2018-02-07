@@ -1,20 +1,20 @@
 // Copyright (c) 2018 Popcorn
-// Author(s) Calvin Feng
+// Author(s) Carmen To
 
 package handler
 
 import (
 	"encoding/json"
 	"github.com/jinzhu/gorm"
-	"popcorn/model"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"popcorn/model"
 	"time"
 )
 
 type RegisterRequest struct {
-	Username     string `json:"username"`
-	Password 		 string `json:"password"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func NewUserCreateHandler(db *gorm.DB) http.HandlerFunc {
@@ -37,8 +37,8 @@ func NewUserCreateHandler(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 		newUser := &model.User{
-			Username:           regReq.Username,
-			PasswordDigest: 		hashBytes,
+			Username:       regReq.Username,
+			PasswordDigest: hashBytes,
 		}
 
 		newUser.ResetSessionToken()
@@ -53,8 +53,8 @@ func NewUserCreateHandler(db *gorm.DB) http.HandlerFunc {
 		http.SetCookie(w, &cookie)
 
 		res := &UserJSONResponse{
-			Username:         newUser.Username,
-			SessionToken: 		newUser.SessionToken,
+			Username:     newUser.Username,
+			SessionToken: newUser.SessionToken,
 		}
 
 		if bytes, err := json.Marshal(res); err != nil {
@@ -67,8 +67,8 @@ func NewUserCreateHandler(db *gorm.DB) http.HandlerFunc {
 }
 
 type UserJSONResponse struct {
-	Username        string `json:"username"`
-	SessionToken 		string `json:"session_token"`
+	Username     string `json:"username"`
+	SessionToken string `json:"session_token"`
 }
 
 func NewUserListHandler(db *gorm.DB) http.HandlerFunc {
@@ -82,8 +82,8 @@ func NewUserListHandler(db *gorm.DB) http.HandlerFunc {
 		res := []*UserJSONResponse{}
 		for _, user := range users {
 			res = append(res, &UserJSONResponse{
-				Username:         user.Username,
-				SessionToken: 		user.SessionToken,
+				Username:     user.Username,
+				SessionToken: user.SessionToken,
 			})
 		}
 

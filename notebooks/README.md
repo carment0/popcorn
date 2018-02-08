@@ -15,7 +15,7 @@ source environment/bin/activate
 
 Install Python dependency
 ```
-pip install -r requirements.txt
+pip install -a requirements.txt
 ```
 
 Now you should have `numpy`, `matplotlib` and `jupyter` installed.

@@ -4,6 +4,8 @@
 // Package lowrank provides tools to perform low rank approximation on latent features of movies and users.
 package lowrank
 
+import "gonum.org/v1/gonum/mat"
+
 type DataProcessor struct {
 	UserIDToIndex  map[int]int
 	UserIndexToID  map[int]int
@@ -66,4 +68,25 @@ func NewDataProcessor(ratingFilePath string, movieFilepath string) (*DataProcess
 		RatingMap:      ratingMap,
 		MovieMap:       movieMap,
 	}, nil
+}
+
+// GetRatingMatrix returns a I by J matrix where I represents the ith user and J represents the jth movie. The rating
+// matrix was supposed to be sparse but instead of filling it up with zero values. I've decided to set a movie's average
+// rating as its baseline. All zero valued spaces will be filled by a movie's average rating.
+func (dp *DataProcessor) GetRatingMatrix() *mat.Dense {
+	I, J := len(dp.RatingMap), len(dp.MovieMap)
+	R := mat.NewDense(I, J, nil)
+	for i := 0; i < I; i += 1 {
+		for j := 0; j < J; j += 1 {
+			userId := dp.UserIndexToID[i]
+			movieId := dp.MovieIndexToID[j]
+			if _, ok := dp.RatingMap[userId][movieId]; ok {
+				R.Set(i, j, dp.RatingMap[userId][movieId])
+			} else {
+				R.Set(i, j, dp.MovieMap[movieId].AvgRating)
+			}
+		}
+	}
+
+	return R
 }

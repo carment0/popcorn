@@ -46,7 +46,7 @@ func (a *Approximator) Loss(reg float64) (float64, float64, error) {
 	I, J := prediction.Dims()
 	diff := mat.NewDense(I, J, nil)
 	diff.Sub(prediction, a.Rating)
-	accuracy := AbsAverage(diff)
+	avgDiscrepancy := AbsMax(diff)
 	diff.MulElem(diff, diff)
 
 	loss := 0.5 * mat.Sum(diff)
@@ -59,7 +59,7 @@ func (a *Approximator) Loss(reg float64) (float64, float64, error) {
 	MSquared.MulElem(MSquared, MSquared)
 	loss += reg * mat.Sum(MSquared) / 2.0
 
-	return loss, accuracy, nil
+	return loss, avgDiscrepancy, nil
 }
 
 func (a *Approximator) Gradients(reg float64) (*mat.Dense, *mat.Dense, error) {
@@ -94,8 +94,10 @@ func (a *Approximator) Train(steps int, epochSize int, reg float64, learnRate fl
 	J, _ := a.MovieLatent.Dims()
 	for step := 0; step < steps; step += 1 {
 		if step%epochSize == 0 {
-			loss, accuracy, _ := a.Loss(reg)
-			fmt.Printf("%d: net loss %v, avg loss %v, and accuracy %v \n", step, loss, loss/float64(I*J), accuracy)
+			loss, avgDiscrepancy, _ := a.Loss(reg)
+			fmt.Printf("%d: net loss %.2f, avg loss %.8f, and average discrepancy from true value %.8f \n",
+				step, loss, loss/float64(I*J), avgDiscrepancy,
+			)
 		}
 
 		if GradU, GradM, err := a.Gradients(reg); err == nil {

@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-// import uuid from 'uuid/v1';
+import uuid from 'uuid/v1';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
@@ -16,35 +16,39 @@ class Login extends React.Component {
 
   static propTypes = {
     handleDialogClose: PropTypes.func.isRequired,
-    // dispatchLogin: PropTypes.func.isRequired,
-    // sessionErrors: PropTypes.array.isRequired,
-    // clearErrors: PropTypes.func.isRequired,
+    dispatchLogin: PropTypes.func.isRequired,
+    sessionErrors: PropTypes.array.isRequired,
+    clearErrors: PropTypes.func.isRequired,
     switchDialog: PropTypes.func.isRequired,
   };
 
+  componentDidMount() {
+    this.props.clearErrors();
+  }
+
   handleFormSubmission = (e) => {
     e.preventDefault();
-    // this.props.dispatchLogin(this.state);
+    this.props.dispatchLogin(this.state);
   };
 
   update(field) {
     return (e) => this.setState({ [field]: e.currentTarget.value });
   }
 
-  // get renderErrors() {
-  //   if (this.props.sessionErrors === []) {
-  //     return;
-  //   }
-  //   return (
-  //     <ul className="session-errors">
-  //       {this.props.sessionErrors.map((error) => (
-  //         <li key={uuid()} >
-  //           {error}
-  //         </li>
-  //       ))}
-  //     </ul>
-  //   );
-  // }
+  get renderErrors() {
+    if (this.props.sessionErrors === []) {
+      return;
+    }
+    return (
+      <ul className="session-errors">
+        {this.props.sessionErrors.map((error) => (
+          <li key={uuid()} >
+            {error}
+          </li>
+        ))}
+      </ul>
+    );
+  }
 
   render() {
     return (

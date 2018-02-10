@@ -17,6 +17,8 @@ import './navigation.scss';
 import Login from '../components/login';
 import Signup from '../components/signup';
 
+import { login, signup, clearSessionErrors } from '../store/index';
+
 const FormType = {
   SIGN_UP: 'SIGN_UP',
   LOG_IN: 'LOG_IN'
@@ -37,7 +39,11 @@ class Navigation extends React.Component {
 
   static propTypes = {
     history: PropTypes.object.isRequired,
-    userPreference: PropTypes.object.isRequired
+    userPreference: PropTypes.object.isRequired,
+    dispatchLogin: PropTypes.func.isRequired,
+    dispatchSignup: PropTypes.func.isRequired,
+    errors: PropTypes.array.isRequired,
+    dispatchClearSessionErrors: PropTypes.func.isRequired
   };
 
   handleTabSelect = (key) => {
@@ -124,7 +130,15 @@ class Navigation extends React.Component {
   }
 }
 
-const mapReduxStateToProps = (state) => ({ userPreference: state.userPreference });
-const mapDispatchToProps = () => ({});
+const mapReduxStateToProps = (state) => ({
+  userPreference: state.userPreference,
+  errors: state.errors.session
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchLogin: (user) => dispatch(login(user)),
+  dispatchSignup: (user) => dispatch(signup(user)),
+  dispatchClearSessionErrors: () => dispatch(clearSessionErrors())
+});
 
 export default connect(mapReduxStateToProps, mapDispatchToProps)(Navigation);

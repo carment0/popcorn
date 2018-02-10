@@ -28,9 +28,7 @@ class Login extends React.Component {
 
   handleFormSubmission = (e) => {
     e.preventDefault();
-    this.props.dispatchLogin(this.state).then(() =>
-      this.props.handleDialogClose()
-    );
+    this.props.dispatchLogin(this.state);
   };
 
   update(field) {
@@ -45,7 +43,7 @@ class Login extends React.Component {
       <ul className="session-errors">
         {this.props.sessionErrors.map((res) => (
           <li key={uuid()} >
-            {res.response.data.error}
+            {res}
           </li>
         ))}
       </ul>

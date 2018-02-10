@@ -25,8 +25,10 @@ export const clearSessionErrors = () => ({
 
 export const signup = (user) => (dispatch) => {
   return request.post('api/users/register', user).then((res) => {
-    return dispatch(receiveCurrentUser(res));
-  }).catch((error) => {
+    const userInfo = res.data;
+    return dispatch(receiveCurrentUser(userInfo));
+  }).catch((err) => {
+    const error = err.response.data.error;
     return dispatch(receiveErrors(error));
   });
 };
@@ -35,7 +37,8 @@ export const login = (user) => (dispatch) => {
   return request.post('api/users/login', user).then((res) => {
     const userInfo = res.data;
     return dispatch(receiveCurrentUser(userInfo));
-  }).catch((error) => {
+  }).catch((err) => {
+    const error = err.response.data.error;
     return dispatch(receiveErrors(error));
   });
 };

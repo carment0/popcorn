@@ -17,7 +17,7 @@ import './navigation.scss';
 import Login from '../components/login';
 import Signup from '../components/signup';
 
-import { login, signup, clearSessionErrors } from '../store/users/session.action';
+import { login, signup, logout, clearSessionErrors } from '../store/users/session.action';
 
 const FormType = {
   SIGN_UP: 'SIGN_UP',
@@ -44,6 +44,7 @@ class Navigation extends React.Component {
     errors: PropTypes.array.isRequired,
     dispatchLogin: PropTypes.func.isRequired,
     dispatchSignup: PropTypes.func.isRequired,
+    dispatchLogout: PropTypes.func.isRequired,
     dispatchClearSessionErrors: PropTypes.func.isRequired
   };
 
@@ -56,6 +57,9 @@ class Navigation extends React.Component {
         break;
       case 2:
         window.open('https://github.com/carment0/popcorn');
+        break;
+      case 3:
+        this.props.dispatchLogout();
         break;
     }
   };
@@ -99,6 +103,14 @@ class Navigation extends React.Component {
     );
   }
 
+  get logoutNav() {
+    if (this.props.session.currentUser) {
+      return (
+        <NavItem eventKey={3}>Logout</NavItem>
+      );
+    }
+  }
+
   render() {
     return (
       <section className="navigation">
@@ -116,12 +128,14 @@ class Navigation extends React.Component {
               </NavItem>
               <NavItem eventKey={1}>Recommendations</NavItem>
               <NavItem eventKey={2}>Github</NavItem>
+              {this.logoutNav}
             </Nav>
           </Navbar.Collapse>
         </Navbar>
         <Dialog
           title={this.dialogTitle}
           open={this.state.dialogOpen}
+          modal={false}
           contentStyle={dialogContentStyle}
           onRequestClose={this.handleDialogClose}>
           {this.form}
@@ -140,6 +154,7 @@ const mapReduxStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   dispatchLogin: (user) => dispatch(login(user)),
   dispatchSignup: (user) => dispatch(signup(user)),
+  dispatchLogout: () => dispatch(logout()),
   dispatchClearSessionErrors: () => dispatch(clearSessionErrors())
 });
 

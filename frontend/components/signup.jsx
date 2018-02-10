@@ -28,7 +28,7 @@ class Signup extends React.Component {
 
   handleFormSubmission = (e) => {
     e.preventDefault();
-    this.props.dispatchSignup(this.state).then(() => this.props.handleDialogClose());
+    this.props.dispatchSignup(this.state);
   };
 
   update(field) {
@@ -42,7 +42,7 @@ class Signup extends React.Component {
 
     return (
       <ul className="session-errors">
-        {this.props.sessionErrors.map((res) => (<li key={uuid()}>{res.response.data.error}</li>))}
+        {this.props.sessionErrors.map((res) => (<li key={uuid()}>{res}</li>))}
       </ul>
     );
   }

@@ -20,6 +20,7 @@ class Login extends React.Component {
     sessionErrors: PropTypes.array.isRequired,
     clearErrors: PropTypes.func.isRequired,
     switchDialog: PropTypes.func.isRequired,
+    session: PropTypes.object.isRequired,
   };
 
   componentDidMount() {
@@ -28,7 +29,11 @@ class Login extends React.Component {
 
   handleFormSubmission = (e) => {
     e.preventDefault();
-    this.props.dispatchLogin(this.state);
+    this.props.dispatchLogin(this.state).then(() => {
+      if (this.props.session.currentUser) {
+        this.props.handleDialogClose();
+      }
+    });
   };
 
   update(field) {
@@ -70,8 +75,8 @@ class Login extends React.Component {
             type="password" /><br />
           <div className="button-container">
             <FlatButton
-              type="login"
-              label="Login"
+              type="submit"
+              label="Submit"
               primary={true}
               keyboardFocused={true} />
             <FlatButton label="Cancel"

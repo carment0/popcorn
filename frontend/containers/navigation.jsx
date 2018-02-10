@@ -53,13 +53,20 @@ class Navigation extends React.Component {
 
     switch (key) {
       case 1:
-        this.setState({ dialogOpen: true, formType: 'SIGN_UP' });
+        if (this.props.session.currentUser === null) {
+          this.setState({ dialogOpen: true, formType: 'SIGN_UP' });
+        } else if (this.props.history.location.pathname !== '/recommend') {
+          this.props.history.push('recommend');
+        }
         break;
       case 2:
         window.open('https://github.com/carment0/popcorn');
         break;
       case 3:
         this.props.dispatchLogout();
+        break;
+      case 4:
+        this.setState({ dialogOpen: true, formType: 'LOG_IN' });
         break;
     }
   };
@@ -90,7 +97,8 @@ class Navigation extends React.Component {
           handleDialogClose={this.handleDialogClose}
           sessionErrors={this.props.errors}
           clearErrors={this.props.dispatchClearSessionErrors}
-          switchDialog={this.createDialogOpenHandler(FormType.LOG_IN)} />
+          switchDialog={this.createDialogOpenHandler(FormType.LOG_IN)}
+          session={this.props.session} />
       );
     }
     return (
@@ -99,7 +107,8 @@ class Navigation extends React.Component {
         handleDialogClose={this.handleDialogClose}
         sessionErrors={this.props.errors}
         clearErrors={this.props.dispatchClearSessionErrors}
-        switchDialog={this.createDialogOpenHandler(FormType.SIGN_UP)} />
+        switchDialog={this.createDialogOpenHandler(FormType.SIGN_UP)}
+        session={this.props.session} />
     );
   }
 
@@ -109,6 +118,9 @@ class Navigation extends React.Component {
         <NavItem eventKey={3}>Logout</NavItem>
       );
     }
+    return (
+      <NavItem eventKey={4}>Login</NavItem>
+    );
   }
 
   render() {

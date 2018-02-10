@@ -20,6 +20,7 @@ class Signup extends React.Component {
     sessionErrors: PropTypes.array.isRequired,
     clearErrors: PropTypes.func.isRequired,
     switchDialog: PropTypes.func.isRequired,
+    session: PropTypes.object.isRequired,
   };
 
   componentDidMount() {
@@ -28,7 +29,11 @@ class Signup extends React.Component {
 
   handleFormSubmission = (e) => {
     e.preventDefault();
-    this.props.dispatchSignup(this.state);
+    this.props.dispatchSignup(this.state).then(() => {
+      if (this.props.session.currentUser) {
+        this.props.handleDialogClose();
+      }
+    });
   };
 
   update(field) {

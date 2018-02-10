@@ -1,5 +1,14 @@
 .navigation {
   width: 100%;
+  a {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    img {
+      width: 15%
+    }
+  }
   .navbar {
     margin: 0 0 0 0;
     border-radius: 0px;

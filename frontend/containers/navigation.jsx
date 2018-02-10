@@ -30,6 +30,10 @@ const dialogContentStyle = {
   maxWidth: '500px'
 };
 
+function capitalizeName(username) {
+  return username.charAt(0).toUpperCase() + username.slice(1);
+}
+
 class Navigation extends React.Component {
   state = {
     activeKey: 1,
@@ -129,7 +133,16 @@ class Navigation extends React.Component {
         <Navbar inverse collapseOnSelect>
           <Navbar.Header>
             <Navbar.Brand>
-              <a href="/#">Popcorn</a>
+              <a href="/#">
+                <img
+                  className="popcorn-logo"
+                  src="images/popcorn-color.svg"
+                  alt="logo" />
+                <p>
+                  {this.props.session.currentUser
+                    ? `${capitalizeName(this.props.session.currentUser.username)}'s Popcorn` : 'Popcorn'}
+                </p>
+              </a>
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>

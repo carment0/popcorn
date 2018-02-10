@@ -28,7 +28,7 @@ class Signup extends React.Component {
 
   handleFormSubmission = (e) => {
     e.preventDefault();
-    this.props.dispatchSignup(this.state);
+    this.props.dispatchSignup(this.state).then(() => this.props.handleDialogClose());
   };
 
   update(field) {
@@ -39,13 +39,10 @@ class Signup extends React.Component {
     if (this.props.sessionErrors === []) {
       return;
     }
+
     return (
       <ul className="session-errors">
-        {this.props.sessionErrors.map((error) => (
-          <li key={uuid()} >
-            {error}
-          </li>
-        ))}
+        {this.props.sessionErrors.map((res) => (<li key={uuid()}>{res.response.data.error}</li>))}
       </ul>
     );
   }
@@ -55,6 +52,7 @@ class Signup extends React.Component {
       <div className="signup">
         <p>By signing up with Popcorn, your personal movie recommendations
            will be saved and updated as you rate more movies.</p>
+        {this.renderErrors}
         <form className="signup-form" onSubmit={this.handleFormSubmission}>
           <TextField
             fullWidth={true}

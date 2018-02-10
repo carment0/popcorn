@@ -28,7 +28,9 @@ class Login extends React.Component {
 
   handleFormSubmission = (e) => {
     e.preventDefault();
-    this.props.dispatchLogin(this.state);
+    this.props.dispatchLogin(this.state).then(() =>
+      this.props.handleDialogClose()
+    );
   };
 
   update(field) {
@@ -41,9 +43,9 @@ class Login extends React.Component {
     }
     return (
       <ul className="session-errors">
-        {this.props.sessionErrors.map((error) => (
+        {this.props.sessionErrors.map((res) => (
           <li key={uuid()} >
-            {error}
+            {res.response.data.error}
           </li>
         ))}
       </ul>
@@ -54,6 +56,7 @@ class Login extends React.Component {
     return (
       <div className="login">
         <form className="login-form" onSubmit={this.handleFormSubmission}>
+          {this.renderErrors}
           <TextField
             fullWidth={true}
             value={this.state.username}
@@ -82,7 +85,7 @@ class Login extends React.Component {
           <Divider style={fatDividerStyle} />
         </div>
         <div className="switch-dialog">
-          <p>{`Don't have an account?`}
+          <p>{'Don\'t have an account?'}
             <FlatButton
               label="Sign up"
               secondary={true}

@@ -17,7 +17,7 @@ import './navigation.scss';
 import Login from '../components/login';
 import Signup from '../components/signup';
 
-import { login, signup, clearSessionErrors } from '../store/index';
+import { login, signup, clearSessionErrors } from '../store/users/session.action';
 
 const FormType = {
   SIGN_UP: 'SIGN_UP',
@@ -39,10 +39,11 @@ class Navigation extends React.Component {
 
   static propTypes = {
     history: PropTypes.object.isRequired,
+    session: PropTypes.object.isRequired,
     userPreference: PropTypes.object.isRequired,
+    errors: PropTypes.array.isRequired,
     dispatchLogin: PropTypes.func.isRequired,
     dispatchSignup: PropTypes.func.isRequired,
-    errors: PropTypes.array.isRequired,
     dispatchClearSessionErrors: PropTypes.func.isRequired
   };
 
@@ -132,7 +133,8 @@ class Navigation extends React.Component {
 
 const mapReduxStateToProps = (state) => ({
   userPreference: state.userPreference,
-  errors: state.errors.session
+  errors: state.errors.session,
+  session: state.session
 });
 
 const mapDispatchToProps = (dispatch) => ({

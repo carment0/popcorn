@@ -13,13 +13,23 @@ class Recommender extends React.Component {
 
   }
 
+  get greeting() {
+    return <h2>{this.props.currentUser ? `Welcome back ${this.props.currentUser.username}` : 'Welcome bitch'}</h2>;
+  }
+
   render() {
-    return <h1>This is Recommender</h1>;
+    return (
+      <section>
+        <h1>Welcome to Recommender</h1>
+        {this.greeting}
+      </section>
+    );
   }
 }
 
 const mapReduxStateToProps = (state) => ({
-  userPreference: state.userPreference
+  userPreference: state.userPreference,
+  currentUser: state.session.currentUser
 });
 
 const mapDispatchToProps = () => ({

@@ -1,0 +1,44 @@
+.rating-record-container {
+  width: 25%;
+  font-size: 15px;
+  height: 100%;
+  min-height: 1372px;
+  font-family: Roboto;
+  margin: 0em 0em 0em 1em;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  -webkit-box-shadow: 2px 4px 5px 1px rgba(50, 50, 50, 0.1);
+  -moz-box-shadow:    2px 4px 5px 1px rgba(50, 50, 50, 0.1);
+  box-shadow:         2px 4px 5px 1px rgba(50, 50, 50, 0.1);
+  align-items: center;
+  animation: fade 2s;
+
+  @keyframes fade {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+
+    h1 {
+      font-size: 2em;
+      font-weight: 800;
+    }
+  }
+
+  .movies {
+    display: flex;
+    height: 100%;
+    width: 98%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}

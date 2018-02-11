@@ -3,23 +3,24 @@
  * @author Calvin Feng, Carmen To
  */
 
-// External imports
+// Thirdparty imports
 import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { HashRouter, Route } from 'react-router-dom';
-
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-// Internal imports
+// Component imports
 import Recommender from './containers/recommender';
 import Welcome from './containers/welcome';
 import Navigation from './containers/navigation';
 import Footer from './components/footer';
 import ReduxStore from './store';
+
+// Style
 import './index.scss';
 
 

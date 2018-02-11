@@ -12,7 +12,7 @@ type Rating struct {
 	UpdatedAt time.Time `json:"-"`
 
 	// Foreign Keys
-	UserID  uint
-	MovieID uint
-	Value   float64 `gorm:"type:float8"`
+	UserID  uint    `json:"user_id"`
+	MovieID uint    `json:"movie_id"`
+	Value   float64 `gorm:"type:float8" json:"rating"`
 }

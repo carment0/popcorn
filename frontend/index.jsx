@@ -1,6 +1,6 @@
 /**
  * @copyright Popcorn, 2018
- * @author Calvin Feng
+ * @author Calvin Feng, Carmen To
  */
 
 // External imports
@@ -18,6 +18,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Recommender from './containers/recommender';
 import Welcome from './containers/welcome';
 import Navigation from './containers/navigation';
+import Footer from './components/footer';
 import ReduxStore from './store';
 import './index.scss';
 
@@ -46,6 +47,7 @@ class Application extends React.Component {
           <Navigation history={this.props.history} />
           <Route path="/welcome" component={Welcome} />
           <Route path="/recommend" component={Recommender} />
+          <Footer />
         </article>
       </MuiThemeProvider>
     );

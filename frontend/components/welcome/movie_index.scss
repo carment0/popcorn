@@ -1,0 +1,76 @@
+.movie-index {
+  width: 75%;
+  font-size: 1rem;
+  font-family: Roboto;
+  margin: 0em 0em 0em 0em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  -webkit-box-shadow: 2px 4px 5px 1px rgba(50, 50, 50, 0.1);
+  -moz-box-shadow: 2px 4px 5px 1px rgba(50, 50, 50, 0.1);
+  box-shadow: 2px 4px 5px 1px rgba(50, 50, 50, 0.1);
+  animation: fade 2s;
+
+  @keyframes fade {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+  }
+
+  .fetching-progress {
+    display: 100%;
+    width: 100%;
+  }
+
+  .instruction {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+
+    p {
+      margin: 1rem;
+      font-size: 1rem;
+    }
+
+    h4 {
+      margin: 1rem;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+  }
+
+  .movies {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    height: 4rem;
+
+    button {
+      margin-right: 1rem;
+      font-size: 1rem;
+    }
+  }
+}

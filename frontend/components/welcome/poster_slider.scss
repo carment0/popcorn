@@ -1,0 +1,17 @@
+.poster-slider {
+  width: 750px;
+  background: rgba(200,200,200, 0.2);
+  h1 {
+    font-size: 1em;
+  }
+  animation: fade 2s;
+
+  @keyframes fade {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}

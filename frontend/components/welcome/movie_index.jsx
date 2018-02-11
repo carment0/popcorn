@@ -3,21 +3,25 @@
  * @author Calvin Feng
  */
 
+// Thirdparty imports
+import _ from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
-
-import { ProgressBar } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import LinearProgress from 'material-ui/LinearProgress';
 
+// Component imports
 import MovieItem from '../movie_item';
 import PosterSlider from './poster_slider';
 
+// Store imports
 import { mostViewedMoviesFetch, movieSkip } from '../../store/movies/movie.action';
 import { movieDetailFetch, movieTrailerFetch } from '../../store/movies/detail.action';
 import { movieRatingPost } from '../../store/movies/rating.action';
+
+// Style imports
+import './movie_index.scss';
 
 
 class MovieIndex extends React.Component {
@@ -96,7 +100,7 @@ class MovieIndex extends React.Component {
     );
   }
 
-  get mostViewedMovies() {
+  get mostViewedMovieItems() {
     const movieRatings = this.props.movieRatings;
 
     // Only serve movies that haven't been rated
@@ -125,32 +129,32 @@ class MovieIndex extends React.Component {
     const progressPercentage = (100 * Object.keys(this.props.movieRatings).length) / 10;
     if (Object.keys(this.props.movies.mostViewed).length === 0) {
       return (
-        <div className="most-viewed-container">
-          <div className="header">
+        <article className="movie-index">
+          <section className="header">
             <h1>Popular Movies</h1>
-          </div>
-          <div>
+          </section>
+          <section className="fetching-progress">
             <h5>Please wait while movies are fetching</h5>
             <LinearProgress mode="indeterminate" />
-          </div>
-        </div>
+          </section>
+        </article>
       );
     }
 
     return (
-      <div className="most-viewed-container">
-        <div className="header">
+      <article className="movie-index">
+        <section className="header">
           <h1>Popular Movies</h1>
-        </div>
+        </section>
         <PosterSlider
           movies={this.state.moviesOnDisplay}
           movieDetails={this.props.movieDetails} />
         {this.instruction}
-        <ProgressBar now={progressPercentage} />
+        <LinearProgress mode="determinate" value={progressPercentage} />
         <div className="movies">
-          { this.mostViewedMovies }
+          { this.mostViewedMovieItems }
         </div>
-        <div className="footer">
+        <section className="footer">
           <Button
             disabled={this.state.isMovieSetLoading}
             bsSize="xsmall"
@@ -159,8 +163,8 @@ class MovieIndex extends React.Component {
             bsStyle="primary">
             Load more movies
           </Button>
-        </div>
-      </div>
+        </section>
+      </article>
     );
   }
 }

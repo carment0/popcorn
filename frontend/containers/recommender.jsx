@@ -3,8 +3,11 @@
  * @author Calvin Feng
  */
 
+// Thirdparty
 import React from 'react';
 import { connect } from 'react-redux';
+
+// Style imports
 import './recommender.scss';
 
 

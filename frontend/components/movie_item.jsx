@@ -3,15 +3,21 @@
  * @author Calvin Feng
  */
 
+// Thirdparty imports
 import React from 'react';
+import PropTypes from 'prop-types';
 
 
 class MovieItem extends React.Component {
+  static propTypes = {
+    movieId: PropTypes.number.isRequired
+  };
+
   componentWillReceiveProps() {
   }
 
   render() {
-    return <h1>Movie Item</h1>;
+    return <article>{this.props.movieId}</article>;
   }
 }
 

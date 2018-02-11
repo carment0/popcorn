@@ -12,7 +12,7 @@ import (
 // despite that 64 bit float is an overkill for a rating that only has one decimal precision.
 type Movie struct {
 	// Model base class attributes
-	ID        uint      `gorm:"primary_key" json:"-"`
+	ID        uint      `gorm:"primary_key" json:"id"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 

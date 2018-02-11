@@ -3,7 +3,11 @@
  * @author Calvin Feng
  */
 
+// Thirdparty imports
 import React from 'react';
+
+// Style imports
+import './poster_slider.scss';
 
 
 class PosterSlider extends React.Component {
@@ -11,7 +15,11 @@ class PosterSlider extends React.Component {
   }
 
   render() {
-    return <h1>Movie Item</h1>;
+    return (
+      <section className="poster-slider">
+        Poster slider Work in progress...
+      </section>
+    );
   }
 }
 

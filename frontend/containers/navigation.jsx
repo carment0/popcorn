@@ -10,9 +10,8 @@ import { connect } from 'react-redux';
 import { Nav } from 'react-bootstrap';
 import { NavItem } from 'react-bootstrap';
 import { Navbar } from 'react-bootstrap';
+import Indicator from '../components/navigation/indicator';
 import Dialog from 'material-ui/Dialog';
-
-import Indicator from '../components/indicator';
 import './navigation.scss';
 import Login from '../components/login';
 import Signup from '../components/signup';

@@ -3,20 +3,23 @@
  * @author Calvin Feng, Carmen To
  */
 
+// Thirdparty imports
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
 import { Nav } from 'react-bootstrap';
 import { NavItem } from 'react-bootstrap';
 import { Navbar } from 'react-bootstrap';
-import Indicator from '../components/navigation/indicator';
 import Dialog from 'material-ui/Dialog';
-import './navigation.scss';
-import Login from '../components/login';
-import Signup from '../components/signup';
 
+// Component imports
+import Indicator from '../components/navigation/indicator';
+import Login from '../components/navigation/login';
+import Signup from '../components/navigation/signup';
 import { login, signup, logout, clearSessionErrors } from '../store/users/session.action';
+
+// Style
+import './navigation.scss';
 
 const FormType = {
   SIGN_UP: 'SIGN_UP',
@@ -42,9 +45,9 @@ class Navigation extends React.Component {
 
   static propTypes = {
     history: PropTypes.object.isRequired,
+    errors: PropTypes.array.isRequired,
     session: PropTypes.object.isRequired,
     userPreference: PropTypes.object.isRequired,
-    errors: PropTypes.array.isRequired,
     dispatchLogin: PropTypes.func.isRequired,
     dispatchSignup: PropTypes.func.isRequired,
     dispatchLogout: PropTypes.func.isRequired,
@@ -53,7 +56,6 @@ class Navigation extends React.Component {
 
   handleTabSelect = (key) => {
     this.setState({ activeKey: key });
-
     switch (key) {
       case 1:
         if (this.props.session.currentUser === null) {

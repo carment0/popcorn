@@ -38,12 +38,8 @@
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.7",
     "extract-text-webpack-plugin": "^3.0.0",
-<<<<<<< HEAD
-    "material-ui": "^0.19.4",
-=======
     "lodash": "^4.17.5",
     "material-ui": "^0.19.2",
->>>>>>> fc7dc62... Welcome page has movie index and poster slider now, however implementation is not complete
     "node-sass": "^4.5.3",
     "prop-types": "^15.5.10",
     "react": "^15.6.2",

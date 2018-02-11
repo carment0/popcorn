@@ -4,8 +4,8 @@
 package model
 
 import (
-	"time"
 	"github.com/lib/pq"
+	"time"
 )
 
 type User struct {

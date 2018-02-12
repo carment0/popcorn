@@ -5,8 +5,27 @@
 
 import request from 'axios';
 
+
 export const MOVIE_SKIPPED = 'MOVIE_SKIPPED';
 export const movieSkip = (movieId) => (dispatch) => dispatch({ type: MOVIE_SKIPPED, movieId });
+
+export const ALL_MOVIES_FETCH_SUCCESS = 'ALL_MOVIES_FETCH_SUCCESS';
+export const ALL_MOVIES_FETCH_FAIL = 'ALL_MOVIES_FETCH_FAIL';
+
+/**
+ * Fetch the list of all movies from the database.
+ * @returns {Promise}
+ */
+export const allMoviesFetch = () => (dispatch) => {
+  return request.get('api/movies')
+    .then((res) => {
+      return dispatch({
+        type: ALL_MOVIES_FETCH_SUCCESS,
+        payload: res.data
+      });
+    })
+    .catch((error) => dispatch({ type: ALL_MOVIES_FETCH_FAIL, error }));
+};
 
 export const MOST_VIEWED_MOVIES_FETCH_SUCCESS = 'MOST_VIEWED_MOVIES_FETCH_SUCCESS';
 export const MOST_VIEWED_MOVIES_FETCH_FAIL = 'MOST_VIEWED_MOVIES_FETCH_FAIL';
@@ -14,7 +33,6 @@ export const MOST_VIEWED_MOVIES_FETCH_FAIL = 'MOST_VIEWED_MOVIES_FETCH_FAIL';
 /**
  * Fetch movies ranked by popularity from the server. Popularity is determined by number of views and average rating
  * score. The current endpoint returns all movie and this may become a problem. It is better to provide a limit.
- * @param {function} dispatch
  * @returns {Promise}
  */
 export const mostViewedMoviesFetch = () => (dispatch) => {
@@ -36,7 +54,8 @@ export const RECOMMENDED_MOVIES_FETCH_FAIL = 'RECOMMENDED_MOVIES_FETCH_FAIL';
  * and does not have an account. If user is authenticated, we only need to make a request to the endpoint because server
  * will authenticate using client's session token. However, just to be safe, send the user ID anyways. If user is not
  * authenticated, then we must submit a map of movie ID to movie ratings.
- * @param {function} dispatch
+ * @param {number} userId
+ * @param {object} ratingMap
  * @returns {Promise}
  */
 export const recommendedMoviesFetch = (userId, ratingMap) => (dispatch) => {

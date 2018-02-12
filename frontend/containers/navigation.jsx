@@ -47,7 +47,6 @@ class Navigation extends React.Component {
     history: PropTypes.object.isRequired,
     errors: PropTypes.array.isRequired,
     session: PropTypes.object.isRequired,
-    userPreference: PropTypes.object.isRequired,
     dispatchLogin: PropTypes.func.isRequired,
     dispatchSignup: PropTypes.func.isRequired,
     dispatchLogout: PropTypes.func.isRequired,
@@ -150,7 +149,7 @@ class Navigation extends React.Component {
           <Navbar.Collapse>
             <Nav pullRight onSelect={this.handleTabSelect}>
               <NavItem eventKey={0} id="indicator">
-                <Indicator isFetching={this.props.userPreference.isFetching} />
+                <Indicator isFetching={false} />
               </NavItem>
               <NavItem eventKey={1}>Recommendations</NavItem>
               <NavItem eventKey={2}>Github</NavItem>
@@ -172,7 +171,6 @@ class Navigation extends React.Component {
 }
 
 const mapReduxStateToProps = (state) => ({
-  userPreference: state.userPreference,
   errors: state.errors.session,
   session: state.session
 });

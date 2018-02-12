@@ -42,20 +42,21 @@ class MovieIndex extends React.Component {
   };
 
   handleButtonClickMoreMovies = () => {
-    if (Object.keys(this.props.movies.mostViewed).length > 0) {
-      this.randomlySetMoviesOnDisplay(this.props.movies.mostViewed);
+    if (this.props.movies.mostViewed.size > 0 && Object.keys(this.props.movies.all).length > 0) {
+      this.shuffleMoviesAndSetDisplay(this.props.movies.all, this.props.movies.mostViewed);
     } else {
       this.props.dispatchMostViewedMoviesFetch();
     }
   };
 
-  randomlySetMoviesOnDisplay = (mostViewedMovies) => {
-    if (Object.keys(mostViewedMovies).length > 0) {
+  shuffleMoviesAndSetDisplay = (movies, mostViewedSet) => {
+    if (mostViewedSet.size > 0 && Object.keys(movies).length > 0) {
       const displayMovies = {};
-      _.shuffle(Object.keys(mostViewedMovies)).slice(0, 12).forEach((movieId) => {
-        const movie = mostViewedMovies[movieId];
+      _.shuffle(Array.from(mostViewedSet)).slice(0, 12).forEach((movieId) => {
+        const movie = movies[movieId];
         displayMovies[movieId] = movie;
       });
+
       this.setState({ displayMovies });
     }
   };
@@ -90,7 +91,7 @@ class MovieIndex extends React.Component {
   }
 
   get mostViewedMovieItems() {
-    // Only serve movies that haven't been rated
+    // Filter away the rated items.
     const unratedMovieIds = Object.keys(this.state.displayMovies).filter((movieId) => {
       return !this.props.movieRatings[movieId];
     });
@@ -119,14 +120,21 @@ class MovieIndex extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (Object.keys(this.state.displayMovies).length === 0) {
-      this.randomlySetMoviesOnDisplay(nextProps.movies.mostViewed);
+    const mostViewedMoviesPropHasChanged = this.props.movies.mostViewed.size !== nextProps.movies.mostViewed.size;
+
+    const moviesPropHasChanged = (
+      Object.keys(this.props.movies.all).length !== Object.keys(nextProps.movies.all).length
+    );
+
+    if (mostViewedMoviesPropHasChanged || moviesPropHasChanged) {
+      console.log('Prop has changed, now shuffle movie and display!');
+      this.shuffleMoviesAndSetDisplay(nextProps.movies.all, nextProps.movies.mostViewed);
     }
   }
 
   render() {
     const progressPercentage = (100 * Object.keys(this.props.movieRatings).length) / 10;
-    if (Object.keys(this.props.movies.mostViewed).length === 0) {
+    if (this.props.movies.mostViewed.size === 0 || Object.keys(this.props.movies.all) === 0) {
       return (
         <article className="movie-index">
           <section className="header">

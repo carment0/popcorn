@@ -6,8 +6,8 @@
 import request from 'axios';
 
 
-export const RATING_POST_SUCCESS = 'RATING_POST_SUCCESS';
-export const RATING_POST_FAIL = 'RATING_POST_FAIL';
+export const MOVIE_RATING_POST_SUCCESS = 'MOVIE_RATING_POST_SUCCESS';
+export const MOVIE_RATING_POST_FAIL = 'MOVIE_RATING_POST_FAIL';
 
 /**
  * Make a POST request to server to save a movie rating submitted by current user.
@@ -24,13 +24,13 @@ export const movieRatingPost = (movieId, userId, value) => (dispatch) => {
 
   return request.post('api/ratings/', payload).then((res) => {
     return dispatch({
-      type: RATING_POST_SUCCESS,
+      type: MOVIE_RATING_POST_SUCCESS,
       payload: res.data
     });
-  }).catch((error) => {
-    return dispatch({
-      type: RATING_POST_FAIL,
-      error: error
-    });
-  });
+  }).catch((error) => dispatch({ type: MOVIE_RATING_POST_FAIL, error }));
+};
+
+export const MOVIE_RATING_RECORDED = 'MOVIE_RATING_RECORDED';
+export const movieRatingRecord = (movieId, value) => (dispatch) => {
+  return dispatch({ type: MOVIE_RATING_RECORDED, movieId, value });
 };

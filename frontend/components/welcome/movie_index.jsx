@@ -12,13 +12,13 @@ import { Button } from 'react-bootstrap';
 import LinearProgress from 'material-ui/LinearProgress';
 
 // Component imports
-import MovieItem from '../movie_item';
+import MovieItem from './movie_item';
 import PosterSlider from './poster_slider';
 
 // Store imports
 import { mostViewedMoviesFetch, movieSkip } from '../../store/movies/movie.action';
 import { movieDetailFetch, movieTrailerFetch } from '../../store/movies/detail.action';
-import { movieRatingPost } from '../../store/movies/rating.action';
+import { movieRatingPost, movieRatingRecord } from '../../store/movies/rating.action';
 
 // Style imports
 import './movie_index.scss';
@@ -30,13 +30,14 @@ class MovieIndex extends React.Component {
   };
 
   static propTypes = {
+    session: PropTypes.object.isRequired,
+    movies: PropTypes.object.isRequired,
     movieDetails: PropTypes.object.isRequired,
     movieRatings: PropTypes.object.isRequired,
-    movies: PropTypes.object.isRequired,
     dispatchMovieSkip: PropTypes.func.isRequired,
     dispatchMovieDetailFetch: PropTypes.func.isRequired,
-    dispatchMovieTrailerFetch: PropTypes.func.isRequired,
     dispatchMovieRatingPost: PropTypes.func.isRequired,
+    dispatchMovieRatingRecord: PropTypes.func.isRequired,
     dispatchMostViewedMoviesFetch: PropTypes.func.isRequired
   };
 
@@ -46,9 +47,9 @@ class MovieIndex extends React.Component {
     } else {
       this.props.dispatchMostViewedMoviesFetch();
     }
-  }
+  };
 
-  randomlySetMoviesOnDisplay(mostViewedMovies) {
+  randomlySetMoviesOnDisplay = (mostViewedMovies) => {
     if (Object.keys(mostViewedMovies).length > 0) {
       const displayMovies = {};
       _.shuffle(Object.keys(mostViewedMovies)).slice(0, 12).forEach((movieId) => {
@@ -57,19 +58,7 @@ class MovieIndex extends React.Component {
       });
       this.setState({ displayMovies });
     }
-  }
-
-  componentDidMount() {
-    if (Object.keys(this.props.movies.mostViewed).length === 0) {
-      this.props.dispatchMostViewedMoviesFetch();
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (Object.keys(this.state.displayMovies).length === 0) {
-      this.randomlySetMoviesOnDisplay(nextProps.movies.mostViewed);
-    }
-  }
+  };
 
   get instruction() {
     const instruction = `These are some of the most viewed American films. We think it is very likely that you have
@@ -101,28 +90,38 @@ class MovieIndex extends React.Component {
   }
 
   get mostViewedMovieItems() {
-    const movieRatings = this.props.movieRatings;
-
     // Only serve movies that haven't been rated
     const unratedMovieIds = Object.keys(this.state.displayMovies).filter((movieId) => {
-      return movieRatings[movieId] === undefined;
+      return !this.props.movieRatings[movieId];
     });
 
     return unratedMovieIds.sort().map((movieId) => {
       const movie = this.state.displayMovies[movieId];
       return (
         <MovieItem
-          isRecommendation={false}
           key={movie.id}
+          movieDetail={this.props.movieDetails[movie.imdb_id]}
           movieId={movie.id}
           imdbId={movie.imdb_id}
-          movieDetail={this.props.movieDetails[movie.imdb_id]}
+          session={this.props.session}
           dispatchMovieSkip={this.props.dispatchMovieSkip}
           dispatchMovieRatingPost={this.props.dispatchMovieRatingPost}
-          dispatchMovieDetailFetch={this.props.dispatchMovieDetailFetch}
-          dispatchMovieTrailerFetch={this.props.dispatchMovieTrailerFetch}  />
+          dispatchMovieRatingRecord={this.props.dispatchMovieRatingRecord}
+          dispatchMovieDetailFetch={this.props.dispatchMovieDetailFetch} />
       );
     });
+  }
+
+  componentDidMount() {
+    if (Object.keys(this.props.movies.mostViewed).length === 0) {
+      this.props.dispatchMostViewedMoviesFetch();
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (Object.keys(this.state.displayMovies).length === 0) {
+      this.randomlySetMoviesOnDisplay(nextProps.movies.mostViewed);
+    }
   }
 
   render() {
@@ -156,10 +155,9 @@ class MovieIndex extends React.Component {
         </div>
         <section className="footer">
           <Button
-            disabled={this.state.isMovieSetLoading}
             bsSize="xsmall"
             className="react-buttons"
-            onClick={this.handleClickMoreMovies}
+            onClick={this.handleButtonClickMoreMovies}
             bsStyle="primary">
             Load more movies
           </Button>
@@ -173,7 +171,8 @@ const mapReduxStateToProps = (state) => {
   return {
     movies: state.movies,
     movieDetails: state.movieDetails,
-    movieRatings: state.movieRatings
+    movieRatings: state.movieRatings,
+    session: state.session
   };
 };
 
@@ -183,6 +182,7 @@ const mapDispatchToProps = (dispatch) => {
     dispatchMovieSkip: (movieId) => dispatch(movieSkip(movieId)),
     dispatchMovieDetailFetch: (imdbId) => dispatch(movieDetailFetch(imdbId)),
     dispatchMovieTrailerFetch: (imdbId) => dispatch(movieTrailerFetch(imdbId)),
+    dispatchMovieRatingRecord: (movieId, rating) => dispatch(movieRatingRecord(movieId, rating)),
     dispatchMovieRatingPost: (movieId, rating) => dispatch(movieRatingPost(movieId, rating))
   };
 };

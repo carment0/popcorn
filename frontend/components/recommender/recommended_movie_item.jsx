@@ -8,38 +8,35 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Spinner from 'spin';
 import Rating from 'react-rating';
-import { OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
 import FlatButton from 'material-ui/FlatButton';
 
 // Style
-import './movie_item.scss';
+import './recommended_movie_item.scss';
 
 
-class MovieItem extends React.Component {
+class RecommendedMovieItem extends React.Component {
   static propTypes = {
     movieDetail: PropTypes.object,
-    playTrailer: PropTypes.func,
-    movieRating: PropTypes.number,
     movieTrailers: PropTypes.array,
+    session: PropTypes.object.isRequired,
     movieId: PropTypes.number.isRequired,
     imdbId: PropTypes.string.isRequired,
-    isRecommendation: PropTypes.bool.isRequired,
+    playTrailer: PropTypes.func.isRequired,
     dispatchMovieSkip: PropTypes.func.isRequired,
     dispatchMovieRatingPost: PropTypes.func.isRequired,
-    dispatchMovieTrailerFetch: PropTypes.func.isRequired,
-    dispatchMovieDetailFetch: PropTypes.func.isRequired
-  };
+    dispatchMovieRatingRecord: PropTypes.func.isRequired,
+    dispatchMovieDetailFetch: PropTypes.func.isRequired,
+    dispatchMovieTrailerFetch: PropTypes.func.isRequired
+  }
 
   static defaultProps = {
-    movieRating: undefined,
-    movieTrailers: undefined,
+    movieTrailers: [],
     movieDetail: {
       isDefaultProp: true,
       title: 'Loading...',
       year: '....',
       plot: 'Loading...'
     },
-    playTrailer: () => {}
   };
 
   /**
@@ -55,10 +52,16 @@ class MovieItem extends React.Component {
   };
 
   /**
-   * Save movie rating to server.
+   * If user is authenticated, rating is saved to database otherwise the rating is cached in redux store and wait until
+   * user sign ups and logs in.
+   * @param {number} ratingValue
    */
   handleRatingSelect = (ratingValue) => {
-    this.props.dispatchMovieRatingPost(this.props.movieId, ratingValue);
+    if (this.props.session.currentUser !== null) {
+      this.props.dispatchMovieRatingPost(this.props.movieId, ratingValue);
+    }
+
+    this.props.dispatchMovieRatingRecord(this.props.movieId, ratingValue);
   };
 
   /**
@@ -75,35 +78,20 @@ class MovieItem extends React.Component {
     this.props.playTrailer(this.props.imdbId);
   };
 
-  get poster() {
-    if (this.props.movieDetail.poster) {
-      return (
-        <section className="poster">
-          <img id={this.props.movieId} src={this.props.movieDetail.poster} alt="poster" />
-        </section>
-      );
+  componentDidMount() {
+    this.fetchMovieDetail();
+    if (this.props.movieTrailers.length === 0) {
+      this.props.dispatchMovieTrailerFetch(this.props.imdbId);
     }
-
-    return <section className="poster" />;
   }
 
-  get ratedItemContent() {
-    const tooltip = (
-      <Tooltip id="tooltip">
-        Your rating: <strong>{this.props.movieRating}</strong>
-      </Tooltip>
-    );
-
-    return (
-      <section className="rated movie-item" id={this.props.movieId}>
-        <OverlayTrigger trigger="click" rootClose placement="bottom" overlap={tooltip}>
-          {this.poster}
-        </OverlayTrigger>
-      </section>
-    );
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.movieDetail.isDefaultProp && this.spinner) {
+      this.spinner.stop();
+    }
   }
 
-  get recommendedItemContent() {
+  render() {
     const buttons = [];
 
     // When there is no movie trailers, we shouldn't even show a button to prompt user to play trailer.
@@ -139,7 +127,7 @@ class MovieItem extends React.Component {
             <div className="plot">{this.props.movieDetail.plot}</div>
             <div className="rating-toolbar" >
               <div className="star-toolbar-container">
-                <Rating fractions={2} onClick={this.handleRatingSelect} />
+                <Rating fractions={2} onChange={this.handleRatingSelect} />
               </div>
               <div className="button-container">{buttons}</div>
             </div>
@@ -148,53 +136,6 @@ class MovieItem extends React.Component {
       </article>
     );
   }
-
-  get itemContent() {
-    const titleString = this.props.movieDetail.title + ' - ' + this.props.movieDetail.year;
-    const popover = (
-      <Popover id="popover-trigger-click-root-close" title={titleString}>
-        {this.props.movieDetail.plot}
-      </Popover>
-    );
-
-    return (
-      <article className="default movie-item" id={this.props.movieId}>
-        <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={popover}>
-          {this.poster}
-        </OverlayTrigger>
-        <div className="rating-toolbar">
-          <div className="star-toolbar-container">
-            <Rating fractions={2} onClick={this.handleRatingSelect} />
-          </div>
-        </div>
-      </article>
-    );
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.movieDetail.isDefaultProp && this.spinner) {
-      this.spinner.stop();
-    }
-  }
-
-  componentDidMount() {
-    this.fetchMovieDetail();
-    if (this.props.isRecommendation && this.props.movieTrailers === undefined) {
-      this.props.dispatchMovieTrailerFetch(this.props.imdbId);
-    }
-  }
-
-  render() {
-    if (this.props.movieRating) {
-      return this.ratedItemContent;
-    }
-
-    if (this.props.isRecommendation) {
-      return this.recommendedItemContent;
-    }
-
-    return this.itemContent;
-  }
 }
 
-export default MovieItem;
+export default RecommendedMovieItem;

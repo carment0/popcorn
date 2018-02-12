@@ -27,10 +27,7 @@ export const movieDetailFetch = (imdbId) => (dispatch) => {
       });
     })
     .catch((error) => {
-      return dispatch({
-        type: MOVIE_DETAIL_FETCH_FAIL,
-        error: error
-      });
+      return dispatch({ type: MOVIE_DETAIL_FETCH_FAIL, error, imdbId });
     });
 };
 
@@ -57,9 +54,6 @@ export const movieTrailerFetch = (imdbId) => (dispatch) => {
       });
     })
     .catch((error) => {
-      return dispatch({
-        type: MOVIE_TRAILER_FETCH_FAIL,
-        error: error
-      });
+      return dispatch({ type: MOVIE_TRAILER_FETCH_FAIL, error, imdbId });
     });
 };

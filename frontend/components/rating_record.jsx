@@ -9,12 +9,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 // Component imports
-import MovieItem from './movie_item';
+import RatedMovieItem from './rated_movie_item';
 
 // Store imports
-import { movieDetailFetch, movieTrailerFetch } from '../store/movies/detail.action';
-import { movieSkip } from '../store/movies/movie.action';
-import { movieRatingPost } from '../store/movies/rating.action';
+import { movieDetailFetch } from '../store/movies/detail.action';
 
 // Style imports
 import './rating_record.scss';
@@ -26,30 +24,21 @@ class RatingRecord extends React.Component {
     movieDetails: PropTypes.object.isRequired,
     mostViewedMovies: PropTypes.object.isRequired,
     recommendedMovies: PropTypes.object.isRequired,
-    dispatchMovieSkip: PropTypes.func.isRequired,
     dispatchMovieDetailFetch: PropTypes.func.isRequired,
-    dispatchMovieRatingPost: PropTypes.func.isRequired,
-    dispatchMovieTrailerFetch: PropTypes.func.isRequired
   };
 
-  // TODO: I notice that we should have a Redux field for recording all the rated movies. Although it takes up a bit
-  // more memory but the logic is definitely clearer.
   get ratedMovies() {
     const ratedMovieIds = Object.keys(this.props.movieRatings);
     return ratedMovieIds.map((movieId) => {
       const movie = this.props.mostViewedMovies[movieId] || this.props.recommendedMovies.items[movieId];
       return (
-        <MovieItem
-          isRecommendation={false}
+        <RatedMovieItem
           key={movie.id}
           movieId={movie.id}
-          imdbId={movie.imdbId}
-          rating={this.props.movieRatings[movieId]}
-          movieDetail={this.props.movieDetails[movie.imdbId]}
-          dispatchMovieSkip={this.props.dispatchMovieSkip}
-          dispatchMovieDetailFetch={this.props.dispatchMovieDetailFetch}
-          dispatchMovieRatingPost={this.props.dispatchMovieRatingPost}
-          dispatchMovieTrailerFetch={this.props.dispatchMovieTrailerFetch} />
+          imdbId={movie.imdb_id}
+          movieRating={this.props.movieRatings[movieId]}
+          movieDetail={this.props.movieDetails[movie.imdb_id]}
+          dispatchMovieDetailFetch={this.props.dispatchMovieDetailFetch} />
       );
     });
   }
@@ -76,10 +65,7 @@ const mapReduxStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dispatchMovieSkip: (movieId) => dispatch(movieSkip(movieId)),
-    dispatchMovieDetailFetch: (imdbId) => dispatch(movieDetailFetch(imdbId)),
-    dispatchMovieTrailerFetch: (imdbId) => dispatch(movieTrailerFetch(imdbId)),
-    dispatchMovieRatingPost: (movieId, rating) => dispatch(movieRatingPost(movieId, rating))
+    dispatchMovieDetailFetch: (imdbId) => dispatch(movieDetailFetch(imdbId))
   };
 };
 

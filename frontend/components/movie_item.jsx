@@ -125,9 +125,12 @@ class MovieItem extends React.Component {
         onClick={this.handleMovieSkip} />
     );
 
+    // The reason for nesting a content box inside recommended movie item is that the content box has a row flex
+    // direction and the recommended movie item has a column flex direction. Also, adding padding from outer layer is
+    // easier than to add margin.
     return (
       <article className="recommended movie-item" id={this.props.movieId}>
-        <section className="content-box">
+        <section className="content-container">
           <aside className="left">
             {this.poster}
           </aside>

@@ -5,25 +5,40 @@
 
 // Thirdparty
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+
+// Store
+import allMoviesFetch from '../store/movies/movie.action';
 
 // Style imports
 import './recommender.scss';
 
 
 class Recommender extends React.Component {
-  componentWillReceiveProps() {
+  static propTypes = {
+    movies: PropTypes.object.isRequired,
+    session: PropTypes.object.isRequired,
+    dispatchAllMovieFetch: PropTypes.func.isRequired
+  };
 
+  componentDidMount() {
+    if (Object.keys(this.props.movies.all).length === 0) {
+      this.props.dispatchAllMovieFetch();
+    }
   }
 
   get greeting() {
-    return <h2>{this.props.currentUser ? `Welcome back ${this.props.currentUser.username}` : 'Welcome bitch'}</h2>;
+    return (
+      <h2>
+        {this.props.session.currentUser ? `Welcome back ${this.props.session.currentUser.username}` : 'Welcome bitch'}
+      </h2>
+    );
   }
 
   render() {
     return (
       <section>
-        <h1>Welcome to Recommender</h1>
         {this.greeting}
       </section>
     );
@@ -31,12 +46,12 @@ class Recommender extends React.Component {
 }
 
 const mapReduxStateToProps = (state) => ({
-  userPreference: state.userPreference,
-  currentUser: state.session.currentUser
+  session: state.session,
+  movies: state.movies
 });
 
-const mapDispatchToProps = () => ({
-
+const mapDispatchToProps = (dispatch) => ({
+  dispatchAllMovieFetch: () => dispatch(allMoviesFetch())
 });
 
 export default connect(mapReduxStateToProps, mapDispatchToProps)(Recommender);

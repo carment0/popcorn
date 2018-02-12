@@ -31,5 +31,5 @@ type Movie struct {
 
 	// The ratings here are submitted by the users of our web application, which is different from the ratings that came
 	// from the MovieLens data set.
-	Ratings []Rating
+	Ratings []Rating `json:"-"`
 }

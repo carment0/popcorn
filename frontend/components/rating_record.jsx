@@ -20,17 +20,16 @@ import './rating_record.scss';
 
 class RatingRecord extends React.Component {
   static propTypes = {
+    movies: PropTypes.object.isRequired,
     movieRatings: PropTypes.object.isRequired,
     movieDetails: PropTypes.object.isRequired,
-    mostViewedMovies: PropTypes.object.isRequired,
-    recommendedMovies: PropTypes.object.isRequired,
     dispatchMovieDetailFetch: PropTypes.func.isRequired,
   };
 
   get ratedMovies() {
     const ratedMovieIds = Object.keys(this.props.movieRatings);
     return ratedMovieIds.map((movieId) => {
-      const movie = this.props.mostViewedMovies[movieId] || this.props.recommendedMovies.items[movieId];
+      const movie = this.props.movies.all[movieId];
       return (
         <RatedMovieItem
           key={movie.id}
@@ -56,10 +55,9 @@ class RatingRecord extends React.Component {
 
 const mapReduxStateToProps = (state) => {
   return {
+    movies: state.movies,
     movieRatings: state.movieRatings,
-    movieDetails: state.movieDetails,
-    mostViewedMovies: state.movies.mostViewed,
-    recommendedMovies: state.movies.recommended
+    movieDetails: state.movieDetails
   };
 };
 

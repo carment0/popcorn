@@ -5,18 +5,40 @@
 
 // Thirdparty imports
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 // Component imports
 import RatingRecord from '../components/rating_record';
 import MovieIndex from '../components/welcome/movie_index';
 
+// Store imports
+import { allMoviesFetch } from '../store/movies/movie.action';
+
 // Style
 import './welcome.scss';
 
 
 class Welcome extends React.Component {
-  componentWillReceiveProps() {
+  state = {
+    isLoadingMovies: true
+  };
+
+  static propTypes = {
+    movies: PropTypes.object.isRequired,
+    dispatchAllMovieFetch: PropTypes.func.isRequired
+  };
+
+  componentWillReceiveProps(nextProps) {
+    if (Object.keys(nextProps.movies.all).length > 0) {
+      this.setState({ isLoadingMovies: false });
+    }
+  }
+
+  componentDidMount() {
+    if (Object.keys(this.props.movies.all).length === 0) {
+      this.props.dispatchAllMovieFetch();
+    }
   }
 
   render() {
@@ -30,11 +52,11 @@ class Welcome extends React.Component {
 }
 
 const mapReduxStateToProps = (state) => ({
-  userPreference: state.userPreference
+  movies: state.movies
 });
 
-const mapDispatchToProps = () => ({
-
+const mapDispatchToProps = (dispatch) => ({
+  dispatchAllMovieFetch: () => dispatch(allMoviesFetch())
 });
 
 export default connect(mapReduxStateToProps, mapDispatchToProps)(Welcome);

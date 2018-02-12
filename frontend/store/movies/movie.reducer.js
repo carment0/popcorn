@@ -11,9 +11,7 @@ import { RECOMMENDED_MOVIES_FETCH_SUCCESS, RECOMMENDED_MOVIES_FETCH_FAIL } from 
 import { MOVIE_SKIPPED } from './movie.action';
 
 
-const defaultState = {};
-
-function allMovieReducer(state = defaultState, action) {
+function allMovieReducer(state = {}, action) {
   Object.freeze(state);
   switch (action.type) {
     case ALL_MOVIES_FETCH_SUCCESS:
@@ -32,15 +30,13 @@ function allMovieReducer(state = defaultState, action) {
   }
 }
 
-function mostViewedMovieReducer(state = defaultState, action) {
-  Object.freeze(state);
+function mostViewedMovieReducer(state = new Set(), action) {
   switch (action.type) {
     case MOST_VIEWED_MOVIES_FETCH_SUCCESS:
-      const newState = {};
       action.payload.forEach((movie) => {
-        newState[movie.id] = true;
+        state.add(movie.id);
       });
-      return merge({}, state, newState);
+      return state;
 
     case MOST_VIEWED_MOVIES_FETCH_FAIL:
       console.log('Failed to fetch most viewed movies', action.error);
@@ -51,15 +47,13 @@ function mostViewedMovieReducer(state = defaultState, action) {
   }
 }
 
-function recommendedMovieReducer(state = defaultState, action) {
-  Object.freeze(state);
+function recommendedMovieReducer(state = new Set(), action) {
   switch (action.type) {
     case RECOMMENDED_MOVIES_FETCH_SUCCESS:
-      const newState = {};
       action.payload.forEach((movie) => {
-        newState[movie.id] = true;
+        state.add(movie.id);
       });
-      return merge({}, state, newState);
+      return state;
 
     case RECOMMENDED_MOVIES_FETCH_FAIL:
       console.log('Failed to fetch recommended movies', action.error);
@@ -70,21 +64,19 @@ function recommendedMovieReducer(state = defaultState, action) {
   }
 }
 
-function skippedMovieReducer(state = defaultState, action) {
-  Object.freeze(state);
+function skippedMovieReducer(state = new Set(), action) {
   switch (action.type) {
     case MOVIE_SKIPPED:
-      const newState = {};
-      newState[action.movieId] = true;
-      return merge({}, state, newState);
+      state.add(action.movieId);
+      return state;
 
     default:
       return state;
   }
 }
 
-// NOTE: Only mostViewed, recommended, and skipped have boolean values and only all contains the actual data of the
-// the movies. This is to minimize data duplication.
+// NOTE: The keys (mostViewed, recommended, and skipped) are holding a set while the key 'all' contains is holding all
+// the data of the movies. This is to minimize data duplication and to improve performance of front end.
 export default combineReducers({
   all: allMovieReducer,
   mostViewed: mostViewedMovieReducer,

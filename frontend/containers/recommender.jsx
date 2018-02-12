@@ -31,7 +31,7 @@ class Recommender extends React.Component {
   get greeting() {
     return (
       <h2>
-        {this.props.session.currentUser ? `Welcome back ${this.props.session.currentUser.username}` : 'Welcome bitch'}
+        {this.props.session.currentUser ? `Welcome back ${this.props.session.currentUser.username}` : 'Recommender'}
       </h2>
     );
   }

@@ -10,9 +10,8 @@ import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 
 // Reducers
-import errorsReducer from './errors';
+import errorReducer from './errors';
 import sessionReducer from './users/session.reducer';
-import userPreferenceReducer from './users/preference.reducer';
 import movieRatingReducer from './movies/rating.reducer';
 import movieDetailReducer from './movies/detail.reducer';
 import movieReducer from './movies/movie.reducer';
@@ -23,8 +22,7 @@ import movieReducer from './movies/movie.reducer';
  */
 const rootReducer = combineReducers({
   session: sessionReducer,
-  errors: errorsReducer,
-  userPreference: userPreferenceReducer,
+  errors: errorReducer,
   movieRatings: movieRatingReducer,
   movieDetails: movieDetailReducer,
   movies: movieReducer

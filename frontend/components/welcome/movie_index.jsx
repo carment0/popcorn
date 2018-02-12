@@ -115,8 +115,8 @@ class MovieIndex extends React.Component {
           isRecommendation={false}
           key={movie.id}
           movieId={movie.id}
-          imdbId={movie.imdbId}
-          movieDetail={this.props.movieDetails[movie.imdbId]}
+          imdbId={movie.imdb_id}
+          movieDetail={this.props.movieDetails[movie.imdb_id]}
           dispatchMovieSkip={this.props.dispatchMovieSkip}
           dispatchMovieRatingPost={this.props.dispatchMovieRatingPost}
           dispatchMovieDetailFetch={this.props.dispatchMovieDetailFetch}

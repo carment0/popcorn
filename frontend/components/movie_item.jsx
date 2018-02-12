@@ -17,13 +17,13 @@ import './movie_item.scss';
 
 class MovieItem extends React.Component {
   static propTypes = {
+    movieDetail: PropTypes.object,
     playTrailer: PropTypes.func,
-    rating: PropTypes.number,
+    movieRating: PropTypes.number,
+    movieTrailers: PropTypes.array,
     movieId: PropTypes.number.isRequired,
     imdbId: PropTypes.string.isRequired,
     isRecommendation: PropTypes.bool.isRequired,
-    movieDetail: PropTypes.object.isRequired,
-    movieTrailers: PropTypes.array.isRequired,
     dispatchMovieSkip: PropTypes.func.isRequired,
     dispatchMovieRatingPost: PropTypes.func.isRequired,
     dispatchMovieTrailerFetch: PropTypes.func.isRequired,
@@ -31,13 +31,16 @@ class MovieItem extends React.Component {
   };
 
   static defaultProps = {
+    movieRating: undefined,
+    movieTrailers: undefined,
     movieDetail: {
       isDefaultProp: true,
       title: 'Loading...',
       year: '....',
       plot: 'Loading...'
     },
-  }
+    playTrailer: () => {}
+  };
 
   /**
    * Initiate fetching metadata of the current movie and spinning the loading bar so user knows that it is fetching
@@ -87,7 +90,7 @@ class MovieItem extends React.Component {
   get ratedItemContent() {
     const tooltip = (
       <Tooltip id="tooltip">
-        Your rating: <strong>{this.props.rating}</strong>
+        Your rating: <strong>{this.props.movieRating}</strong>
       </Tooltip>
     );
 
@@ -133,12 +136,7 @@ class MovieItem extends React.Component {
             <div className="plot">{this.props.movieDetail.plot}</div>
             <div className="rating-toolbar" >
               <div className="star-toolbar-container">
-                <Rating
-                  fractions={2}
-                  onClick={this.handleRatingSelect}
-                  empty={'fa fa-star-o fa-2x'}
-                  full={'fa fa-star fa-2x'}
-                  color={'yellow'} />
+                <Rating fractions={2} onClick={this.handleRatingSelect} />
               </div>
               <div className="button-container">{buttons}</div>
             </div>
@@ -163,12 +161,7 @@ class MovieItem extends React.Component {
         </OverlayTrigger>
         <div className="rating-toolbar">
           <div className="star-toolbar-container">
-            <Rating
-              fractions={2}
-              onClick={this.handleRatingSelect}
-              empty={'fa fa-star-o fa-2x'}
-              full={'fa fa-star fa-2x'}
-              color={'yellow'} />
+            <Rating fractions={2} onClick={this.handleRatingSelect} />
           </div>
         </div>
       </article>
@@ -183,13 +176,13 @@ class MovieItem extends React.Component {
 
   componentDidMount() {
     this.fetchMovieDetail();
-    if (this.props.isRecommendation && this.props.movieTrailers.length === 0) {
+    if (this.props.isRecommendation && this.props.movieTrailers === undefined) {
       this.props.dispatchMovieTrailerFetch(this.props.imdbId);
     }
   }
 
   render() {
-    if (this.props.rating) {
+    if (this.props.movieRating) {
       return this.ratedItemContent;
     }
 

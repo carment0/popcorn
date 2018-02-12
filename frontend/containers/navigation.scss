@@ -3,10 +3,10 @@
   a {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
 
     img {
-      width: 15%
+      width: 18%
     }
   }
   .navbar {

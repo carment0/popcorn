@@ -147,7 +147,7 @@ class MovieIndex extends React.Component {
           <h1>Popular Movies</h1>
         </section>
         <PosterSlider
-          movies={this.state.moviesOnDisplay}
+          movies={this.state.displayMovies}
           movieDetails={this.props.movieDetails} />
         {this.instruction}
         <LinearProgress mode="determinate" value={progressPercentage} />

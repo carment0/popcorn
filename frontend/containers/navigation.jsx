@@ -59,7 +59,7 @@ class Navigation extends React.Component {
     switch (key) {
       case 1:
         if (this.props.session.currentUser === null) {
-          this.setState({ dialogOpen: true, formType: 'SIGN_UP' });
+          this.setState({ dialogOpen: true, formType: FormType.SIGN_UP });
         } else if (this.props.history.location.pathname !== '/recommend') {
           this.props.history.push('recommend');
         }
@@ -71,7 +71,7 @@ class Navigation extends React.Component {
         this.props.dispatchLogout();
         break;
       case 4:
-        this.setState({ dialogOpen: true, formType: 'LOG_IN' });
+        this.setState({ dialogOpen: true, formType: FormType.LOG_IN });
         break;
     }
   };

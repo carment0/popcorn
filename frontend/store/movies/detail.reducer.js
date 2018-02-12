@@ -23,7 +23,7 @@ export default function movieDetailReducer(state = defaultState, action) {
       return merge({}, state, newState);
 
     case MOVIE_DETAIL_FETCH_FAIL:
-      console.log('Fetch to fail metadata', action.error);
+      console.log(`Failed to fetch metadata for movie ${action.imdbId}`, action.error);
       return state;
 
     default:

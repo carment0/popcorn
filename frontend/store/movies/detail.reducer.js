@@ -6,9 +6,8 @@
 import merge from 'lodash/merge';
 import { MOVIE_DETAIL_FETCH_SUCCESS, MOVIE_DETAIL_FETCH_FAIL } from './detail.action';
 
-const defaultState = {};
 
-export default function movieDetailReducer(state = defaultState, action) {
+export default function movieDetailReducer(state = {}, action) {
   Object.freeze(state);
 
   switch (action.type) {

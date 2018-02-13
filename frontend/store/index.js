@@ -14,6 +14,7 @@ import errorReducer from './errors';
 import sessionReducer from './users/session.reducer';
 import movieRatingReducer from './movies/rating.reducer';
 import movieDetailReducer from './movies/detail.reducer';
+import movieTrailerReducer from './movies/trailer.reducer';
 import movieReducer from './movies/movie.reducer';
 
 /**
@@ -21,10 +22,11 @@ import movieReducer from './movies/movie.reducer';
  * layer of the Redux tree.
  */
 const rootReducer = combineReducers({
-  session: sessionReducer,
   errors: errorReducer,
+  session: sessionReducer,
   movieRatings: movieRatingReducer,
   movieDetails: movieDetailReducer,
+  movieTrailers: movieTrailerReducer,
   movies: movieReducer
 });
 

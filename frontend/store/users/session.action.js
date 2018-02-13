@@ -5,46 +5,42 @@
 
 import request from 'axios';
 
-export const RECEIVE_CURRENT_USER = 'RECEIVE_CURRENT_USER';
-export const RECEIVE_SESSION_ERRORS = 'RECEIVE_SESSION_ERRORS';
 
-export const receiveCurrentUser = (currentUser) => ({
-  type: RECEIVE_CURRENT_USER,
-  currentUser
-});
+export const CLEAR_SESSION_ERRORS = 'CLEAR_SESSION_ERRORS';
+export const clearSessionErrors = () => ({ type: CLEAR_SESSION_ERRORS });
 
-export const receiveErrors = (errors) => ({
-  type: RECEIVE_SESSION_ERRORS,
-  errors
-});
-
-export const clearSessionErrors = () => ({
-  type: RECEIVE_SESSION_ERRORS,
-  errors: []
-});
+export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
+export const SIGNUP_FAIL = 'SIGNUP_FAIL';
 
 export const signup = (user) => (dispatch) => {
   return request.post('api/users/register', user).then((res) => {
-    const userInfo = res.data;
-    return dispatch(receiveCurrentUser(userInfo));
-  }).catch((err) => {
-    const error = err.response.data.error;
-    return dispatch(receiveErrors(error));
-  });
+    return dispatch({
+      type: SIGNUP_SUCCESS,
+      currentUser: res.data
+    });
+  }).catch((err) => dispatch({ type: SIGNUP_FAIL, error: err.response.data.error }));
 };
+
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGIN_FAIL = 'LOGIN_FAIL';
 
 export const login = (user) => (dispatch) => {
   return request.post('api/users/login', user).then((res) => {
-    const userInfo = res.data;
-    return dispatch(receiveCurrentUser(userInfo));
-  }).catch((err) => {
-    const error = err.response.data.error;
-    return dispatch(receiveErrors(error));
-  });
+    return dispatch({
+      type: LOGIN_SUCCESS,
+      currentUser: res.data
+    });
+  }).catch((err) => dispatch({ type: LOGIN_FAIL, error: err.response.data.error }));
 };
 
+export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
+export const LOGOUT_FAIL = 'LOGOUT_FAIL';
+
 export const logout = () => (dispatch) => {
-  return request.delete('api/users/logout').then(() => (
-    dispatch(receiveCurrentUser(null))
-  ));
+  return request.delete('api/users/logout').then(() => {
+    return dispatch({
+      type: LOGOUT_SUCCESS,
+      currentUser: null
+    });
+  }).catch((err) => dispatch({ type: LOGOUT_FAIL, error: err.response.data.error }));
 };

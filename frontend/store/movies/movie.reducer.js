@@ -13,6 +13,7 @@ import { MOVIE_SKIPPED } from './movie.action';
 
 function allMovieReducer(state = {}, action) {
   Object.freeze(state);
+
   switch (action.type) {
     case ALL_MOVIES_FETCH_SUCCESS:
       const newState = {};
@@ -31,6 +32,8 @@ function allMovieReducer(state = {}, action) {
 }
 
 function mostViewedMovieReducer(state = new Set(), action) {
+  Object.freeze(state);
+
   switch (action.type) {
     case MOST_VIEWED_MOVIES_FETCH_SUCCESS:
       action.payload.forEach((movie) => {
@@ -48,6 +51,8 @@ function mostViewedMovieReducer(state = new Set(), action) {
 }
 
 function recommendedMovieReducer(state = new Set(), action) {
+  Object.freeze(state);
+
   switch (action.type) {
     case RECOMMENDED_MOVIES_FETCH_SUCCESS:
       action.payload.forEach((movie) => {
@@ -65,6 +70,8 @@ function recommendedMovieReducer(state = new Set(), action) {
 }
 
 function skippedMovieReducer(state = new Set(), action) {
+  Object.freeze(state);
+
   switch (action.type) {
     case MOVIE_SKIPPED:
       state.add(action.movieId);

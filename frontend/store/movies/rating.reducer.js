@@ -7,10 +7,9 @@ import merge from 'lodash/merge';
 import { MOVIE_RATING_POST_SUCCESS, MOVIE_RATING_POST_FAIL, MOVIE_RATING_RECORDED } from './rating.action';
 
 
-const defaultState = {};
-
-export default function movieRatingReducer(state = defaultState, action) {
+export default function movieRatingReducer(state = {}, action) {
   Object.freeze(state);
+
   switch (action.type) {
     case MOVIE_RATING_RECORDED:
       const newState = {};

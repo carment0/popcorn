@@ -150,9 +150,9 @@ class MovieIndex extends React.Component {
 
     return (
       <article className="movie-index">
-        <section className="header">
+        <header>
           <h1>Popular Movies</h1>
-        </section>
+        </header>
         <PosterSlider
           movies={this.state.displayMovies}
           movieDetails={this.props.movieDetails} />

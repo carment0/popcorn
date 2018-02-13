@@ -21,13 +21,14 @@
     }
   }
 
-  .header {
+  header {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     width: 100%;
 
     h1 {
+      margin-left: 0.5rem;
       font-size: 2rem;
       font-weight: 800;
     }

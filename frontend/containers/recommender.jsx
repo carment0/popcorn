@@ -3,13 +3,17 @@
  * @author Calvin Feng
  */
 
-// Thirdparty
+// Thirdparty imports
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-// Store
-import allMoviesFetch from '../store/movies/movie.action';
+// Component imports
+import RatingRecord from '../components/rating_record';
+import RecommendationIndex from '../components/recommender/recommendation_index';
+
+// Store imports
+import { allMoviesFetch } from '../store/movies/movie.action';
 
 // Style imports
 import './recommender.scss';
@@ -22,6 +26,12 @@ class Recommender extends React.Component {
     dispatchAllMovieFetch: PropTypes.func.isRequired
   };
 
+  componentWillReceive(nextProps) {
+    if (this.props.movies.rated.size !== nextProps.movies.rated.size) {
+      console.log('Rated movie set has changed!');
+    }
+  }
+
   componentDidMount() {
     if (Object.keys(this.props.movies.all).length === 0) {
       this.props.dispatchAllMovieFetch();
@@ -29,17 +39,26 @@ class Recommender extends React.Component {
   }
 
   get greeting() {
-    return (
-      <h2>
-        {this.props.session.currentUser ? `Welcome back ${this.props.session.currentUser.username}` : 'Recommender'}
-      </h2>
-    );
+    if (this.props.session.currentUser) {
+      return `Hi, ${this.props.session.currentUser.username}`;
+    }
+
+    return 'Hello there';
   }
 
   render() {
+    if (this.props.movies.recommended.size !== 0) {
+      return (
+        <section className="recommender">
+          <h3>Recommendations are not ready</h3>
+        </section>
+      );
+    }
+
     return (
-      <section>
-        {this.greeting}
+      <section className="recommender">
+        <RecommendationIndex />
+        <RatingRecord />
       </section>
     );
   }

@@ -1,0 +1,41 @@
+.recommendation-index {
+  width: 75%;
+  font-size: 15px;
+  font-family: Roboto;
+  display: flex;
+  flex-direction: column;
+
+  header {
+    display: inherit;
+    align-items: center;
+
+    h1 {
+      font-size: 2em;
+      font-weight: 800;
+    }
+  }
+
+  .filters {
+    width: 100%;
+    display: inherit;
+    flex-direction: row;
+  }
+
+  .movies {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .circular-progress {
+      margin-top: 2em;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      h4 {
+          margin-bottom: 3em;
+      }
+    }
+  }
+}

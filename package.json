@@ -42,6 +42,7 @@
     "material-ui": "^0.19.2",
     "node-sass": "^4.5.3",
     "prop-types": "^15.5.10",
+    "rc-slider": "^8.6.0",
     "react": "^15.6.2",
     "react-bootstrap": "^0.32.1",
     "react-dom": "^15.6.1",

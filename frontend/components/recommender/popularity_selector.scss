@@ -1,3 +1,35 @@
+.popularity-selector-trigger {
+    width: 20%;
+    margin: 0.5em;
+}
+
+.popularity-selector {
+  width: 100%;
+  margin: 0em 0em 1em 0em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .popover-content {
+    width: 95%;
+    height: 100px;
+
+    .instruction {
+      display: flex;
+      width: 100%;
+      justify-content: flex-start;
+      h1 {
+          font-size: 1em;
+          font-weight: 900;
+      }
+    }
+
+    .slider {
+      width: 98%
+    }
+  }
+}
+
 .rc-slider {
   position: relative;
   height: 14px;

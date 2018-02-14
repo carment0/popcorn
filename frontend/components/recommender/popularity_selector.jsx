@@ -15,20 +15,24 @@ import './popularity_selector.scss';
 
 class PopularitySelector extends React.Component {
   state = {
-    percentile: this.props.movieRatingCountPercentile
+    percentile: this.props.moviePopularityPercentile
   };
 
   static propTypes = {
-    movieRatingCountPercentile: PropTypes.number.isRequired,
+    moviePopularityPercentile: PropTypes.number.isRequired,
     disabled: PropTypes.bool.isRequired,
-    dispatchSetMovieRatingCountPercentile: PropTypes.func.isRequired
+    dispatchSetMoviePopularityPercentile: PropTypes.func.isRequired
   };
 
   handleChange = (value) => {
     this.setState({ percentile: value });
 
-    this.disableTimer = setTimeout(() => {
-      this.props.dispatchSetMovieRatingCountPercentile(this.state.percentile);
+    if (this.dispatchTimer) {
+      clearTimeout(this.dispatchTimer);
+    }
+
+    this.dispatchTimer = setTimeout(() => {
+      this.props.dispatchSetMoviePopularityPercentile(this.state.percentile);
     }, 1000);
   };
 

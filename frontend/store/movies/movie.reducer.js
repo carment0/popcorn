@@ -82,7 +82,7 @@ function skippedMovieReducer(state = new Set(), action) {
   }
 }
 
-// NOTE: The keys (mostViewed, recommended, and skipped) are holding a set while the key 'all' contains is holding all
+// NOTE: The keys (mostViewed, recommended, and skipped) are holding a set while the key 'all' is holding all
 // the data of the movies. This is to minimize data duplication and to improve performance of front end.
 export default combineReducers({
   all: allMovieReducer,

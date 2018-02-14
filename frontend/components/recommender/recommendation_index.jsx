@@ -16,7 +16,7 @@ import PopularitySelector from './popularity_selector';
 
 // Store imports
 import { setMovieYearRange } from '../../store/movies/year_range.action';
-import { setMovieRatingCountPercentile } from '../../store/movies/percentile.action';
+import { setMoviePopularityPercentile } from '../../store/movies/percentile.action';
 
 
 // Style imports
@@ -32,9 +32,9 @@ class RecommendationIndex extends React.Component {
     movies: PropTypes.object.isRequired,
     movieTrailers: PropTypes.object.isRequired,
     movieYearRange: PropTypes.object.isRequired,
-    movieRatingCountPercentile: PropTypes.number.isRequired,
+    moviePopularityPercentile: PropTypes.number.isRequired,
     dispatchSetMovieYearRange: PropTypes.func.isRequired,
-    dispatchSetMovieRatingCountPercentile: PropTypes.func.isRequired
+    dispatchSetMoviePopularityPercentile: PropTypes.func.isRequired
   }
 
   playTrailer = (imdbId) => {
@@ -49,14 +49,14 @@ class RecommendationIndex extends React.Component {
     return (
       <section className="filters">
         <YearRangeSelector
-          disabled={this.props.movies.recommended.size === 0}
+          disabled={false}
           movieYearRange={this.props.movieYearRange}
           dispatchSetMovieYearRange={this.props.dispatchSetMovieYearRange} />
 
         <PopularitySelector
-          dispatchSetMovieRatingCountPercentile={this.props.dispatchSetMovieRatingCountPercentile}
-          movieRatingCountPercentile={this.props.movieRatingCountPercentile}
-          disabled={this.props.movies.recommended.size === 0} />
+          dispatchSetMoviePopularityPercentile={this.props.dispatchSetMoviePopularityPercentile}
+          moviePopularityPercentile={this.props.moviePopularityPercentile}
+          disabled={false} />
       </section>
     );
   }
@@ -124,13 +124,13 @@ class RecommendationIndex extends React.Component {
 const mapReduxStateToProps = (state) => ({
   movieTrailers: state.movieTrailers,
   movieYearRange: state.movieYearRange,
-  movieRatingCountPercentile: state.movieRatingCountPercentile,
+  moviePopularityPercentile: state.moviePopularityPercentile,
   movies: state.movies
 });
 
 const mapDispatchToProps = (dispatch) => ({
   dispatchSetMovieYearRange: (minYear, maxYear) => dispatch(setMovieYearRange(minYear, maxYear)),
-  dispatchSetMovieRatingCountPercentile: (percentile) => dispatch(setMovieRatingCountPercentile(percentile))
+  dispatchSetMoviePopularityPercentile: (percentile) => dispatch(setMoviePopularityPercentile(percentile))
 });
 
 export default connect(mapReduxStateToProps, mapDispatchToProps)(RecommendationIndex);

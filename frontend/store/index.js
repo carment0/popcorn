@@ -17,7 +17,7 @@ import movieDetailReducer from './movies/detail.reducer';
 import movieTrailerReducer from './movies/trailer.reducer';
 import movieReducer from './movies/movie.reducer';
 import movieYearRangeReducer from './movies/year_range.reducer';
-import movieRatingCountPercentileReducer from './movies/percentile.reducer';
+import moviePopularityPercentileReducer from './movies/percentile.reducer';
 
 /**
  * Instead of nesting many reducers within reducers, we are taking a flat tree approach. All keys should be on the first
@@ -31,7 +31,7 @@ const rootReducer = combineReducers({
   movieTrailers: movieTrailerReducer,
   movies: movieReducer,
   movieYearRange: movieYearRangeReducer,
-  movieRatingCountPercentile: movieRatingCountPercentileReducer
+  moviePopularityPercentile: moviePopularityPercentileReducer
 });
 
 const preloadedState = {};

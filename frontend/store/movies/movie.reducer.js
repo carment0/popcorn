@@ -6,9 +6,10 @@
 import merge from 'lodash/merge';
 import { combineReducers } from 'redux';
 import { ALL_MOVIES_FETCH_SUCCESS, ALL_MOVIES_FETCH_FAIL } from './movie.action';
-import { MOST_VIEWED_MOVIES_FETCH_SUCCESS, MOST_VIEWED_MOVIES_FETCH_FAIL } from './movie.action';
+import { POPULAR_MOVIES_FETCH_SUCCESS, POPULAR_MOVIES_FETCH_FAIL } from './movie.action';
 import { RECOMMENDED_MOVIES_FETCH_SUCCESS, RECOMMENDED_MOVIES_FETCH_FAIL } from './movie.action';
 import { MOVIE_SKIPPED } from './movie.action';
+import { MOVIE_RATING_POST_SUCCESS, MOVIE_RATING_RECORDED } from './rating.action';
 
 
 function allMovieReducer(state = {}, action) {
@@ -31,18 +32,18 @@ function allMovieReducer(state = {}, action) {
   }
 }
 
-function mostViewedMovieReducer(state = new Set(), action) {
+function popularMovieReducer(state = new Set(), action) {
   Object.freeze(state);
 
   switch (action.type) {
-    case MOST_VIEWED_MOVIES_FETCH_SUCCESS:
+    case POPULAR_MOVIES_FETCH_SUCCESS:
       action.payload.forEach((movie) => {
         state.add(movie.id);
       });
       return state;
 
-    case MOST_VIEWED_MOVIES_FETCH_FAIL:
-      console.log('Failed to fetch most viewed movies', action.error);
+    case POPULAR_MOVIES_FETCH_FAIL:
+      console.log('Failed to fetch popular movies', action.error);
       return state;
 
     default:
@@ -82,11 +83,26 @@ function skippedMovieReducer(state = new Set(), action) {
   }
 }
 
-// NOTE: The keys (mostViewed, recommended, and skipped) are holding a set while the key 'all' is holding all
+function ratedMovieReducer(state = new Set(), action) {
+  Object.freeze(state);
+
+  switch (action.type) {
+    case MOVIE_RATING_POST_SUCCESS:
+    case MOVIE_RATING_RECORDED:
+      state.add(action.movieId);
+      return state;
+
+    default:
+      return state;
+  }
+}
+
+// NOTE: The keys (popular, recommended, and skipped) are holding a set while the key 'all' is holding all
 // the data of the movies. This is to minimize data duplication and to improve performance of front end.
 export default combineReducers({
   all: allMovieReducer,
-  mostViewed: mostViewedMovieReducer,
+  popular: popularMovieReducer,
   recommended: recommendedMovieReducer,
+  rated: ratedMovieReducer,
   skipped: skippedMovieReducer
 });

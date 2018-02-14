@@ -25,17 +25,17 @@ class YearRangeSelector extends React.Component {
     dispatchSetMovieYearRange: PropTypes.func.isRequired
   };
 
-  handleChange(value) {
+  handleChange = (value) => {
     this.setState({
       minYear: value[0],
       maxYear: value[1]
     });
 
-    if (this.disableTimer) {
-      clearTimeout(this.disableTimer);
+    if (this.dispatchTimer) {
+      clearTimeout(this.dispatchTimer);
     }
 
-    this.disableTimer = setTimeout(() => {
+    this.dispatchTimer = setTimeout(() => {
       this.props.dispatchSetMovieYearRange(this.state.minYear, this.state.maxYear);
     }, 1000);
   }
@@ -53,7 +53,7 @@ class YearRangeSelector extends React.Component {
             disabled={this.props.disabled}
             defaultValue={[this.state.minYear, this.state.maxYear]}
             min={1930}
-            max={2016}
+            max={2018}
             allowCross={false}
             onChange={this.handleChange} />
         </div>

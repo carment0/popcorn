@@ -4,6 +4,7 @@
 package model
 
 import (
+	"encoding/json"
 	"github.com/lib/pq"
 	"time"
 )
@@ -32,4 +33,9 @@ type Movie struct {
 	// The ratings here are submitted by the users of our web application, which is different from the ratings that came
 	// from the MovieLens data set.
 	Ratings []Rating `json:"-"`
+}
+
+type MovieDetail struct {
+	IMDBID string          `gorm:"primary_key" json:"-"`
+	Data   json.RawMessage `gorm:"type:bytea"  json:"-"`
 }

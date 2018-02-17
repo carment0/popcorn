@@ -33,6 +33,7 @@ func LoadRoutes(db *gorm.DB) http.Handler {
 	// Movies related
 	api.Handle("/movies/popular", handler.NewPopularMovieListHandler(db)).Methods("GET")
 	api.Handle("/movies/recommend", handler.NewMovieRecommendationHandler(db)).Methods("POST")
+	api.Handle("/movies/details/{IMDBID}", handler.NewMovieDetailHandler(db)).Methods("GET")
 	api.Handle("/movies", handler.NewMovieListHandler(db)).Methods("GET")
 
 	// Ratings related

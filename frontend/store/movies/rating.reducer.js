@@ -10,7 +10,7 @@ import {
   MOVIE_RATING_RECORDED,
   MOVIE_RATINGS_FETCH_SUCCESS,
   MOVIE_RATINGS_FETCH_FAIL } from './rating.action';
-import { LOGOUT_SUCCESS } from '../users/session.action';
+import { LOGIN_SUCCESS, SIGNUP_SUCCESS, LOGOUT_SUCCESS } from '../users/session.action';
 
 
 export default function movieRatingReducer(state = {}, action) {
@@ -40,6 +40,8 @@ export default function movieRatingReducer(state = {}, action) {
       console.log('Failed to post rating to server', action.error);
       return state;
 
+    case LOGIN_SUCCESS:
+    case SIGNUP_SUCCESS:
     case LOGOUT_SUCCESS:
       return newState;
 

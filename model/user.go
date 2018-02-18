@@ -17,9 +17,9 @@ type User struct {
 	// User base attributes
 	Username       string          `gorm:"type:varchar(100)"              json:"username"`
 	SessionToken   string          `gorm:"type:varchar(100);unique_index" json:"session_token"`
+	Preference     pq.Float64Array `gorm:"type:float8[]"                  json:"preference"`
 	PasswordDigest []byte          `gorm:"type:bytea"                     json:"-"`
 	Ratings        []Rating        `gorm:"ForeignKey:UserID"              json:"-"`
-	Preference     pq.Float64Array `gorm:"type:float8[]"                  json:"-"`
 }
 
 func (u *User) ResetSessionToken() {

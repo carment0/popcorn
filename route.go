@@ -8,9 +8,10 @@ import (
 	"github.com/jinzhu/gorm"
 	"net/http"
 	"popcorn/handler"
+	"popcorn/model"
 )
 
-func LoadRoutes(db *gorm.DB) http.Handler {
+func LoadRoutes(db *gorm.DB, recommendRequestChan chan *model.User) http.Handler {
 	// Defining middleware
 	logMiddleware := NewServerLoggingMiddleware()
 
@@ -39,7 +40,7 @@ func LoadRoutes(db *gorm.DB) http.Handler {
 	api.Handle("/movies", handler.NewMovieListHandler(db)).Methods("GET")
 
 	// Ratings related
-	api.Handle("/ratings", handler.NewRatingCreateHandler(db)).Methods("POST")
+	api.Handle("/ratings", handler.NewRatingCreateHandler(db, recommendRequestChan)).Methods("POST")
 
 	// Serve public folder to clients
 	muxRouter.PathPrefix("/").Handler(http.FileServer(http.Dir("public")))

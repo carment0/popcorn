@@ -1,3 +1,6 @@
+// Copyright (c) 2018 Popcorn
+// Author(s) Calvin Feng
+
 package handler
 
 import (
@@ -27,19 +30,24 @@ func NewRatingListHandler(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func NewRatingCreateHandler(db *gorm.DB) http.HandlerFunc {
+func NewRatingCreateHandler(db *gorm.DB, recommendRequestChan chan *model.User) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 
 		var rating model.Rating
 		if err := decoder.Decode(&rating); err != nil {
-			RenderError(w, "Failed to parse request JSON into struct", http.StatusInternalServerError)
+			RenderError(w, "failed to parse request JSON into struct", http.StatusInternalServerError)
 			return
 		}
 
 		if err := db.Create(&rating).Error; err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		var user model.User
+		if err := db.Where("id = ?", rating.UserID).Preload("Ratings").First(&user).Error; err == nil {
+			recommendRequestChan <- &user
 		}
 
 		if bytes, err := json.Marshal(&rating); err != nil {

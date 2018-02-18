@@ -35,14 +35,16 @@ func (re *RecommendEngine) ListenToInbound(inbound chan *model.User) {
 	for user := range inbound {
 		var movies []model.Movie
 		if err := re.DBConn.Order("id asc").Find(&movies).Error; err != nil {
-			logrus.Error("RecommendEngine has failed to load all movies from database", err)
+			logrus.WithField(
+				"file", "engine.go",
+			).Error("RecommendEngine has failed to load all movies from database", err)
 			continue
 		}
 
 		// In case that database was not seeded properly and no movies are found in the database, we should not proceed
 		// with the algorithm.
 		if len(movies) == 0 {
-			logrus.Error("No movies are found in the database!")
+			logrus.WithField("file", "main.engine").Error("No movies are found in the database!")
 			continue
 		}
 
@@ -70,19 +72,25 @@ func (re *RecommendEngine) ListenToInbound(inbound chan *model.User) {
 
 		approximator := lowrank.NewApproximator(R, featureDim)
 		approximator.MovieLatent = mat.NewDense(len(movies), featureDim, latentFeatures)
-		approximator.ApproximateUserLatent(100, 25, 0, 1e-5)
+		approximator.ApproximateUserLatent(300, 100, 0, 1e-5)
 
 		if len(approximator.UserLatent.RawRowView(0)) == featureDim {
 			user.Preference = approximator.UserLatent.RawRowView(0)
 			if err := re.DBConn.Save(user).Error; err != nil {
-				logrus.Error("Failed to save preference to user model", err)
+				logrus.WithField(
+					"file", "main.engine",
+				).Error("failed to save preference to user model", err)
 			} else {
-				logrus.Infof("Preference for user %d is saved\n", user.ID)
-				re.ConnMap[user.ID].WriteJSON(Notification{UserID: user.ID, Message: "Preference is ready!"})
+				logrus.WithField(
+					"file", "main.engine",
+				).Infof("preference for user %s is saved", user.Username)
+				// re.ConnMap[user.ID].WriteJSON(Notification{UserID: user.ID, Message: "Preference is ready!"})
 			}
 		} else {
-			logrus.Errorf("Something went wrong with approximator, user latent preference vector does not have"+
-				"the correct length. It has %d but expected %d\n",
+			logrus.WithField(
+				"file", "engine.go",
+			).Errorf(`something went wrong with approximator, user latent preference vector does not have
+				the correct length; it has %d but expected %d`,
 				len(approximator.UserLatent.RawRowView(0)),
 				featureDim,
 			)

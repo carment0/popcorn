@@ -5,8 +5,8 @@
 package lowrank
 
 import (
-	"gonum.org/v1/gonum/mat"
 	"github.com/sirupsen/logrus"
+	"gonum.org/v1/gonum/mat"
 )
 
 type Approximator struct {
@@ -95,7 +95,9 @@ func (a *Approximator) Train(steps int, epochSize int, reg float64, learnRate fl
 	for step := 0; step < steps; step += 1 {
 		if step%epochSize == 0 {
 			loss, avgDiscrepancy, _ := a.Loss(reg)
-			logrus.Infof("%d: net loss %.2f, avg loss %.8f, and average discrepancy from true value %.8f \n",
+			logrus.WithField(
+				"file", "lowrank.approximator",
+			).Infof("iteration %3d: net loss %5.2f, avg loss %1.8f, and avg discrepancy from true value %1.8f",
 				step, loss, loss/float64(I*J), avgDiscrepancy,
 			)
 		}
@@ -116,7 +118,9 @@ func (a *Approximator) ApproximateUserLatent(steps int, epochSize int, reg float
 	for step := 0; step < steps; step += 1 {
 		if step%epochSize == 0 {
 			loss, avgDiscrepancy, _ := a.Loss(reg)
-			logrus.Infof("%d: net loss %.2f, avg loss %.8f, and average discrepancy from true value %.8f \n",
+			logrus.WithField(
+				"file", "lowrank.approximator",
+			).Infof("iteration %3d: net loss %7.2f, avg loss %9.8f, and avg discrepancy from true value %9.8f",
 				step, loss, loss/float64(I*J), avgDiscrepancy,
 			)
 		}

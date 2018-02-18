@@ -15,7 +15,8 @@
     "afterAll": false,
     "jest": false,
     "document": false,
-    "window": false
+    "window": false,
+    "YT": false
   },
   "rules": {
     "jsx-a11y/href-no-hash": "off",

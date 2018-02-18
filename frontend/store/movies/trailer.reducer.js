@@ -6,28 +6,30 @@
 import merge from 'lodash/merge';
 import { MOVIE_TRAILER_FETCH_SUCCESS, MOVIE_TRAILER_FETCH_FAIL } from './trailer.action';
 
+const YouTube = 'YouTube';
 
 export default function movieTrailerReducer(state = {}, action) {
   Object.freeze(state);
 
   switch (action.type) {
     case MOVIE_TRAILER_FETCH_SUCCESS:
-      const trailerSearchResults = action.payload.results;
+      const results = action.payload.results;
 
-      const videoSourceURLs = [];
-      trailerSearchResults.forEach((trailerSearchResult) => {
-        if (trailerSearchResult.site === 'YouTube') {
-          videoSourceURLs.push(`https://www.youtube.com/watch?v=${trailerSearchResult.key}`);
+      // Currently we only support movie trailers on YouTube, will consider supporting Vimeo in the future.
+      const youtubeVidoeKeyList = [];
+      results.forEach((trailerSearchResult) => {
+        if (trailerSearchResult.site === YouTube) {
+          youtubeVidoeKeyList.push(trailerSearchResult.key);
         }
       });
 
-      const trailerMap = {};
+      const newState = {};
 
-      if (videoSourceURLs.length > 0) {
-        trailerMap[action.imdbId] = videoSourceURLs;
+      if (youtubeVidoeKeyList.length > 0) {
+        newState[action.imdbId] = youtubeVidoeKeyList;
       }
 
-      return merge({}, state, trailerMap);
+      return merge({}, state, newState);
 
     case MOVIE_TRAILER_FETCH_FAIL:
       console.log(`Failed to fetch movie trailer for movie ${action.imdbId}`, action.error);

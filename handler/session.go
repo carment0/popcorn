@@ -15,8 +15,8 @@ func NewTokenAuthenticateHandler(db *gorm.DB) http.HandlerFunc {
 		cookie, _ := r.Cookie("session_token")
 		if currentUser, err := FindUserByToken(db, cookie.Value); err == nil {
 			res := UserJSONResponse{
-				Username:     currentUser.Username,
-				SessionToken: currentUser.SessionToken,
+				ID:       currentUser.ID,
+				Username: currentUser.Username,
 			}
 
 			if bytes, err := json.Marshal(res); err != nil {
@@ -57,8 +57,8 @@ func NewSessionCreateHandler(db *gorm.DB) http.HandlerFunc {
 		http.SetCookie(w, &cookie)
 
 		res := &UserJSONResponse{
-			Username:     user.Username,
-			SessionToken: user.SessionToken,
+			ID:       user.ID,
+			Username: user.Username,
 		}
 
 		if bytes, err := json.Marshal(res); err != nil {

@@ -16,7 +16,7 @@ import MovieItem from './movie_item';
 import PosterSlider from './poster_slider';
 
 // Store imports
-import { popularMoviesFetch, movieSkip } from '../../store/movies/movie.action';
+import { popularMoviesFetch } from '../../store/movies/movie.action';
 import { movieDetailFetch } from '../../store/movies/detail.action';
 import { movieRatingPost, movieRatingRecord } from '../../store/movies/rating.action';
 
@@ -34,7 +34,6 @@ class MovieIndex extends React.Component {
     movies: PropTypes.object.isRequired,
     movieDetails: PropTypes.object.isRequired,
     movieRatings: PropTypes.object.isRequired,
-    dispatchMovieSkip: PropTypes.func.isRequired,
     dispatchMovieDetailFetch: PropTypes.func.isRequired,
     dispatchMovieRatingPost: PropTypes.func.isRequired,
     dispatchMovieRatingRecord: PropTypes.func.isRequired,
@@ -105,7 +104,6 @@ class MovieIndex extends React.Component {
           movieId={movie.id}
           imdbId={movie.imdb_id}
           session={this.props.session}
-          dispatchMovieSkip={this.props.dispatchMovieSkip}
           dispatchMovieRatingPost={this.props.dispatchMovieRatingPost}
           dispatchMovieRatingRecord={this.props.dispatchMovieRatingRecord}
           dispatchMovieDetailFetch={this.props.dispatchMovieDetailFetch} />
@@ -187,10 +185,9 @@ const mapReduxStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     dispatchPopularMoviesFetch: () => dispatch(popularMoviesFetch()),
-    dispatchMovieSkip: (movieId) => dispatch(movieSkip(movieId)),
     dispatchMovieDetailFetch: (imdbId) => dispatch(movieDetailFetch(imdbId)),
     dispatchMovieRatingRecord: (movieId, rating) => dispatch(movieRatingRecord(movieId, rating)),
-    dispatchMovieRatingPost: (movieId, rating) => dispatch(movieRatingPost(movieId, rating))
+    dispatchMovieRatingPost: (movieId, userId, rating) => dispatch(movieRatingPost(movieId, userId, rating))
   };
 };
 

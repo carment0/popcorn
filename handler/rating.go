@@ -2,10 +2,30 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"net/http"
 	"popcorn/model"
 )
+
+func NewRatingListHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		var ratings []*model.Rating
+		if err := db.Where("user_id = ?", vars["id"]).Find(&ratings).Error; err != nil {
+			RenderError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if bytes, err := json.Marshal(ratings); err != nil {
+			RenderError(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(http.StatusOK)
+			w.Write(bytes)
+		}
+	}
+}
 
 func NewRatingCreateHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -17,12 +37,12 @@ func NewRatingCreateHandler(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		if err := db.Create(rating).Error; err != nil {
+		if err := db.Create(&rating).Error; err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		if bytes, err := json.Marshal(rating); err != nil {
+		if bytes, err := json.Marshal(&rating); err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 		} else {
 			w.WriteHeader(http.StatusOK)

@@ -14,13 +14,7 @@ export const MOVIE_TRAILER_FETCH_FAIL = 'MOVIE_TRAILER_FETCH_FAIL';
  * @param {string} imdbId
  */
 export const movieTrailerFetch = (imdbId) => (dispatch) => {
-  const config = {
-    params: {
-      api_key: '2afddf218bfb5d06ef460cc103af69bc'
-    }
-  };
-
-  return request.get(`https://api.themoviedb.org/3/movie/${imdbId}/videos`, config)
+  return request.get('api/movies/trailers/' + imdbId)
     .then((res) => {
       return dispatch({
         type: MOVIE_TRAILER_FETCH_SUCCESS,

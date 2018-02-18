@@ -30,7 +30,7 @@ import './recommendation_index.scss';
 
 class RecommendationIndex extends React.Component {
   state = {
-    trailerSourceList: []
+    youtubeKeyList: []
   };
 
   static propTypes = {
@@ -52,7 +52,7 @@ class RecommendationIndex extends React.Component {
   playTrailer = (imdbId) => {
     if (this.props.movieTrailers[imdbId] && this.props.movieTrailers[imdbId].length > 0) {
       this.setState({
-        trailerSourceList: this.props.movieTrailers[imdbId]
+        youtubeKeyList: this.props.movieTrailers[imdbId]
       });
     }
   };
@@ -74,10 +74,10 @@ class RecommendationIndex extends React.Component {
   }
 
   get trailerPlayer() {
-    if (this.state.trailerSourceList.length > 0) {
+    if (this.state.youtubeKeyList.length > 0) {
       return (
         <section className="trailer-player">
-          <MovieTrailerPlayer videoSourceList={this.state.trailerSourceList} />
+          <MovieTrailerPlayer youtubeKeyList={this.state.youtubeKeyList} />
         </section>
       );
     }
@@ -88,7 +88,7 @@ class RecommendationIndex extends React.Component {
       const randomImdbId = movieIMDBIds[randomIndex];
       return (
         <section className="trailer-player">
-          <MovieTrailerPlayer videoSourceList={this.props.movieTrailers[randomImdbId]} />
+          <MovieTrailerPlayer youtubeKeyList={this.props.movieTrailers[randomImdbId]} />
         </section>
       );
     }
@@ -115,7 +115,7 @@ class RecommendationIndex extends React.Component {
           session={this.props.session}
           movieId={movie.id}
           imdbId={movie.imdb_id}
-          trailerList={this.props.movieTrailers[movie.imdb_id]}
+          youtubeKeyList={this.props.movieTrailers[movie.imdb_id]}
           movieDetail={this.props.movieDetails[movie.imdb_id]}
           playTrailer={this.playTrailer}
           dispatchMovieSkip={this.props.dispatchMovieSkip}

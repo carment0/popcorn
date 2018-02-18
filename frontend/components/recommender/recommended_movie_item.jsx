@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import Spinner from 'spin';
 import Rating from 'react-rating';
 import FlatButton from 'material-ui/FlatButton';
+import $ from 'jquery';
 
 // Style
 import './recommended_movie_item.scss';
@@ -17,7 +18,7 @@ import './recommended_movie_item.scss';
 class RecommendedMovieItem extends React.Component {
   static propTypes = {
     movieDetail: PropTypes.object,
-    trailerList: PropTypes.array,
+    youtubeKeyList: PropTypes.array,
     session: PropTypes.object.isRequired,
     movieId: PropTypes.number.isRequired,
     imdbId: PropTypes.string.isRequired,
@@ -30,7 +31,7 @@ class RecommendedMovieItem extends React.Component {
   }
 
   static defaultProps = {
-    trailerList: [],
+    youtubeKeyList: [],
     movieDetail: {
       isDefaultProp: true,
       title: 'Loading...',
@@ -72,10 +73,11 @@ class RecommendedMovieItem extends React.Component {
   };
 
   /**
-   * Play a movie trailer
+   * Play a movie trailer and scroll the window to the top.
    */
   handleTrailerPlay = () => {
     this.props.playTrailer(this.props.imdbId);
+    $('html, body').animate({ scrollTop: '0px' }, 1000);
   };
 
   get poster() {
@@ -92,7 +94,7 @@ class RecommendedMovieItem extends React.Component {
 
   componentDidMount() {
     this.fetchMovieDetail();
-    if (this.props.trailerList.length === 0) {
+    if (this.props.youtubeKeyList.length === 0) {
       this.props.dispatchMovieTrailerFetch(this.props.imdbId);
     }
   }
@@ -106,7 +108,7 @@ class RecommendedMovieItem extends React.Component {
   render() {
     const buttons = [];
 
-    if (this.props.trailerList.length > 0) {
+    if (this.props.youtubeKeyList.length > 0) {
       buttons.push(<FlatButton key="play" label="Play Trailer" primary={true} onClick={this.handleTrailerPlay} />);
     }
 

@@ -44,3 +44,15 @@ export const logout = () => (dispatch) => {
     });
   }).catch((err) => dispatch({ type: LOGOUT_FAIL, error: err.response.data.error }));
 };
+
+export const AUTH_SUCCESS = 'AUTH_SUCCESS';
+export const AUTH_FAIL = 'AUTH_FAIL';
+
+export const tokenAuthenticate = () => (dispatch) => {
+  return request.get('api/users/authenticate').then((res) => {
+    return dispatch({
+      type: AUTH_SUCCESS,
+      currentUser: res.data
+    });
+  });
+};

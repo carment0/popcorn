@@ -65,7 +65,7 @@ func loadMovies(filepath string) (map[int]*Movie, error) {
 //     movieID: 3.5
 //   }
 // }
-func loadRatingsByUserID(filepath string) (map[int]map[int]float64, error) {
+func loadRatingsByUserID(filepath string, userMaxNum int) (map[int]map[int]float64, error) {
 	if csvFile, fileErr := os.Open(filepath); fileErr != nil {
 		return nil, fileErr
 	} else {
@@ -105,6 +105,11 @@ func loadRatingsByUserID(filepath string) (map[int]map[int]float64, error) {
 			}
 
 			if _, ok := ratingsByUserID[int(userID)]; !ok {
+				if len(ratingsByUserID) >= userMaxNum {
+					// Skip adding new user if the number of users has already reached capacity
+					continue
+				}
+
 				ratingsByUserID[int(userID)] = make(map[int]float64)
 			}
 

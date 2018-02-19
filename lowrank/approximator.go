@@ -5,14 +5,17 @@
 package lowrank
 
 import (
-	"gonum.org/v1/gonum/mat"
 	"github.com/sirupsen/logrus"
+	"gonum.org/v1/gonum/mat"
+	"fmt"
+	"math"
 )
 
 type Approximator struct {
-	UserLatent  *mat.Dense
-	MovieLatent *mat.Dense
-	Rating      *mat.Dense
+	UserLatent    *mat.Dense
+	MovieLatent   *mat.Dense
+	Rating        *mat.Dense
+	DataProcessor *DataProcessor
 }
 
 func NewApproximator(R *mat.Dense, K int) *Approximator {
@@ -43,10 +46,25 @@ func (a *Approximator) Loss(reg float64) (float64, float64, error) {
 		return 0, 0, err
 	}
 
+	var rmse float64
+
+	count := 0.0
+	if a.DataProcessor != nil {
+		for userID := range a.DataProcessor.TestRatingMap {
+			for movieID := range a.DataProcessor.TestRatingMap[userID] {
+				i := a.DataProcessor.UserIDToIndex[userID]
+				j := a.DataProcessor.MovieIDToIndex[movieID]
+				rmse += math.Pow(prediction.At(i, j) - a.DataProcessor.TestRatingMap[userID][movieID], 2)
+				count += 1.0
+			}
+		}
+	}
+	rmse /= count
+	rmse = math.Sqrt(rmse)
+
 	I, J := prediction.Dims()
 	diff := mat.NewDense(I, J, nil)
 	diff.Sub(prediction, a.Rating)
-	avgDiscrepancy := AbsAverage(diff)
 	diff.MulElem(diff, diff)
 
 	loss := 0.5 * mat.Sum(diff)
@@ -59,7 +77,7 @@ func (a *Approximator) Loss(reg float64) (float64, float64, error) {
 	MSquared.MulElem(MSquared, MSquared)
 	loss += reg * mat.Sum(MSquared) / 2.0
 
-	return loss, avgDiscrepancy, nil
+	return loss, rmse, nil
 }
 
 func (a *Approximator) Gradients(reg float64) (*mat.Dense, *mat.Dense, error) {
@@ -94,10 +112,22 @@ func (a *Approximator) Train(steps int, epochSize int, reg float64, learnRate fl
 	J, _ := a.MovieLatent.Dims()
 	for step := 0; step < steps; step += 1 {
 		if step%epochSize == 0 {
-			loss, avgDiscrepancy, _ := a.Loss(reg)
-			logrus.Infof("%d: net loss %.2f, avg loss %.8f, and average discrepancy from true value %.8f \n",
-				step, loss, loss/float64(I*J), avgDiscrepancy,
-			)
+			loss, rmse, _ := a.Loss(reg)
+
+			var logMessage string
+			if a.DataProcessor == nil {
+				logMessage = fmt.Sprintf(
+					"iteration %3d: net loss %5.2f, avg loss %1.8f",
+					step, loss, loss/float64(I*J),
+				)
+			} else {
+				logMessage = fmt.Sprintf(
+					`iteration %3d: net loss %5.2f, avg loss %1.8f, and RMSE %1.8f`,
+					step, loss, loss/float64(I*J), rmse,
+				)
+			}
+
+			logrus.WithField("file", "lowrank.approximator").Info(logMessage)
 		}
 
 		if GradU, GradM, err := a.Gradients(reg); err == nil {
@@ -115,10 +145,21 @@ func (a *Approximator) ApproximateUserLatent(steps int, epochSize int, reg float
 	J, _ := a.MovieLatent.Dims()
 	for step := 0; step < steps; step += 1 {
 		if step%epochSize == 0 {
-			loss, avgDiscrepancy, _ := a.Loss(reg)
-			logrus.Infof("%d: net loss %.2f, avg loss %.8f, and average discrepancy from true value %.8f \n",
-				step, loss, loss/float64(I*J), avgDiscrepancy,
-			)
+			loss, rmse, _ := a.Loss(reg)
+
+			var logMessage string
+			if a.DataProcessor == nil {
+				logMessage = fmt.Sprintf("iteration %3d: net loss %5.2f, avg loss %1.8f",
+					step, loss, loss/float64(I*J),
+				)
+			} else {
+				logMessage = fmt.Sprintf(
+					`iteration %3d: net loss %5.2f, avg loss %1.8f, and RMSE %1.8f`,
+					step, loss, loss/float64(I*J), rmse,
+				)
+			}
+
+			logrus.WithField("file", "lowrank.approximator").Info(logMessage)
 		}
 
 		if GradU, _, err := a.Gradients(reg); err == nil {

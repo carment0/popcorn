@@ -20,7 +20,6 @@ class MovieItem extends React.Component {
     movieId: PropTypes.number.isRequired,
     imdbId: PropTypes.string.isRequired,
     session: PropTypes.object.isRequired,
-    dispatchMovieSkip: PropTypes.func.isRequired,
     dispatchMovieRatingPost: PropTypes.func.isRequired,
     dispatchMovieRatingRecord: PropTypes.func.isRequired,
     dispatchMovieDetailFetch: PropTypes.func.isRequired
@@ -53,18 +52,12 @@ class MovieItem extends React.Component {
    * @param {number} ratingValue
    */
   handleRatingSelect = (ratingValue) => {
-    if (this.props.session.currentUser !== null) {
-      this.props.dispatchMovieRatingPost(this.props.movieId, ratingValue);
+    if (this.props.session.currentUser === null) {
+      this.props.dispatchMovieRatingRecord(this.props.movieId, ratingValue);
+      return;
     }
 
-    this.props.dispatchMovieRatingRecord(this.props.movieId, ratingValue);
-  };
-
-  /**
-   * Label a movie as skipped in Redux store.
-   */
-  handleMovieSkip = () => {
-    this.props.dispatchMovieSkip(this.props.movieId);
+    this.props.dispatchMovieRatingPost(this.props.movieId, this.props.session.currentUser.id, ratingValue);
   };
 
   get poster() {

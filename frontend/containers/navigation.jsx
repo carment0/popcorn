@@ -16,7 +16,8 @@ import Dialog from 'material-ui/Dialog';
 import Indicator from '../components/navigation/indicator';
 import Login from '../components/navigation/login';
 import Signup from '../components/navigation/signup';
-import { login, signup, logout, clearSessionErrors } from '../store/users/session.action';
+import { login, signup, logout, clearSessionErrors, tokenAuthenticate } from '../store/users/session.action';
+import { movieRatingsFetch } from '../store/movies/rating.action';
 
 // Style
 import './navigation.scss';
@@ -50,7 +51,9 @@ class Navigation extends React.Component {
     dispatchLogin: PropTypes.func.isRequired,
     dispatchSignup: PropTypes.func.isRequired,
     dispatchLogout: PropTypes.func.isRequired,
-    dispatchClearSessionErrors: PropTypes.func.isRequired
+    dispatchClearSessionErrors: PropTypes.func.isRequired,
+    dispatchTokenAuthenticate: PropTypes.func.isRequired,
+    dispatchMovieRatingsFetch: PropTypes.func.isRequired
   };
 
   handleTabSelect = (key) => {
@@ -77,9 +80,9 @@ class Navigation extends React.Component {
 
   handleDialogClose = () => {
     this.setState({ dialogOpen: false, formType: '' });
-    if (this.props.history.location.pathname !== '/recommend') {
-      this.props.history.push('recommend');
-    }
+    // if (this.props.history.location.pathname !== '/recommend') {
+    //   this.props.history.push('recommend');
+    // }
   };
 
   createDialogOpenHandler = (formType) => () => {
@@ -125,6 +128,20 @@ class Navigation extends React.Component {
     return (
       <NavItem eventKey={4}>Login</NavItem>
     );
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.session.currentUser === null) {
+      return;
+    }
+
+    if (nextProps.session.currentUser !== this.props.session.currentUser) {
+      this.props.dispatchMovieRatingsFetch(nextProps.session.currentUser.id);
+    }
+  }
+
+  componentDidMount() {
+    this.props.dispatchTokenAuthenticate();
   }
 
   render() {
@@ -179,7 +196,9 @@ const mapDispatchToProps = (dispatch) => ({
   dispatchLogin: (user) => dispatch(login(user)),
   dispatchSignup: (user) => dispatch(signup(user)),
   dispatchLogout: () => dispatch(logout()),
-  dispatchClearSessionErrors: () => dispatch(clearSessionErrors())
+  dispatchClearSessionErrors: () => dispatch(clearSessionErrors()),
+  dispatchTokenAuthenticate: () => dispatch(tokenAuthenticate()),
+  dispatchMovieRatingsFetch: (userId) => dispatch(movieRatingsFetch(userId))
 });
 
 export default connect(mapReduxStateToProps, mapDispatchToProps)(Navigation);

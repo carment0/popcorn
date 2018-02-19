@@ -3,7 +3,7 @@
  * @author Carmen To
  */
 
-import { LOGIN_SUCCESS, SIGNUP_SUCCESS, LOGOUT_SUCCESS } from './session.action';
+import { LOGIN_SUCCESS, SIGNUP_SUCCESS, LOGOUT_SUCCESS, AUTH_SUCCESS } from './session.action';
 
 const _nullUser = Object.freeze({ currentUser: null });
 
@@ -13,6 +13,7 @@ const SessionReducer = (state = _nullUser, action) => {
     case LOGIN_SUCCESS:
     case LOGOUT_SUCCESS:
     case SIGNUP_SUCCESS:
+    case AUTH_SUCCESS:
       const currentUser = action.currentUser;
       return Object.assign({}, { currentUser });
 

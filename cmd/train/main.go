@@ -14,7 +14,7 @@ import (
 )
 
 func WriteToCSV(filepath string, movieFeatures map[int][]float64, featureDim int) error {
-	csvFile, fileErr := os.Create("dataset/features.csv")
+	csvFile, fileErr := os.Create(filepath)
 	if fileErr != nil {
 		return fileErr
 	}
@@ -28,6 +28,7 @@ func WriteToCSV(filepath string, movieFeatures map[int][]float64, featureDim int
 	}
 
 	var writerError error
+
 	// Write the header first
 	writerError = writer.Write(header)
 	if writerError != nil {
@@ -55,7 +56,7 @@ func main() {
 		FullTimestamp: true,
 	})
 
-	processor, err := lowrank.NewDataProcessor("dataset/ratings.csv", "dataset/movies.csv")
+	processor, err := lowrank.NewDataProcessor("megaset/ratings.csv", "megaset/movies.csv")
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -63,7 +64,10 @@ func main() {
 	featureDim := 10
 	R := processor.GetRatingMatrix()
 	approx := lowrank.NewApproximator(R, featureDim)
-	approx.Train(500, 25, 0, 5e-5)
+	approx.DataProcessor = processor
+
+	// Start training
+	approx.Train(100, 5, 0, 4e-6)
 
 	J, _ := approx.MovieLatent.Dims()
 	featureMapByMovieID := make(map[int][]float64)
@@ -74,5 +78,5 @@ func main() {
 		featureMapByMovieID[movieID] = features
 	}
 
-	WriteToCSV("dataset/features.csv", featureMapByMovieID, featureDim)
+	WriteToCSV("megaset/features.csv", featureMapByMovieID, featureDim)
 }

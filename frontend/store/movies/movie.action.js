@@ -50,17 +50,17 @@ export const RECOMMENDED_MOVIES_FETCH_SUCCESS = 'RECOMMENDED_MOVIES_FETCH_SUCCES
 export const RECOMMENDED_MOVIES_FETCH_FAIL = 'RECOMMENDED_MOVIES_FETCH_FAIL';
 
 /**
- * There are two types of recommendation fetching: (1) user is authenticated and user ID is provided, (2) user is guest
- * and does not have an account. If user is authenticated, we only need to make a request to the endpoint because server
- * will authenticate using client's session token. However, just to be safe, send the user ID anyways. If user is not
- * authenticated, then we must submit a map of movie ID to movie ratings.
+ * There are two types of recommendation fetching: (1) user is authenticated and user in session object is not null, (2)
+ * user is anonymous and does not have an account. If user is authenticated, we only need to make a request to the
+ * endpoint because server will authenticate using client's session token. However, just to be safe, send the user ID
+ * anyways. If user is not authenticated, then we must submit a map of movie ID to movie ratings.
  * @param {number} userId
  * @param {object} ratingMap
  * @returns {Promise}
  */
 export const recommendedMoviesFetch = (session, ratings) => (dispatch) => {
   if (session.currentUser) {
-    return request.get(`api/users/${session.currentUser.username}/recommend`)
+    return request.get(`api/users/${session.currentUser.id}/recommend`)
       .then((res) => {
         return dispatch({
           type: RECOMMENDED_MOVIES_FETCH_SUCCESS,

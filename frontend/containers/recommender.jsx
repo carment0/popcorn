@@ -48,7 +48,7 @@ class Recommender extends React.Component {
   }
 
   render() {
-    if (Object.keys(this.props.movieRatings).length < 0) {
+    if (Object.keys(this.props.movieRatings).length < 10) {
       return (
         <section className="recommender">
           <header>

@@ -4,20 +4,36 @@
 // Package lowrank provides tools to perform low rank approximation on latent features of movies and users.
 package lowrank
 
-import "gonum.org/v1/gonum/mat"
+import (
+	"gonum.org/v1/gonum/mat"
+	"math/rand"
+	"github.com/sirupsen/logrus"
+	"fmt"
+)
+
+const TEST_RATIO = 0.10
+const MAX_NUM_USER = 10000
 
 type DataProcessor struct {
+	MovieMap       map[int]*Movie
 	UserIDToIndex  map[int]int
 	UserIndexToID  map[int]int
 	MovieIDToIndex map[int]int
 	MovieIndexToID map[int]int
-	RatingMap      map[int]map[int]float64
-	MovieMap       map[int]*Movie
+
+	// Training set is being fed into the algorithm
+	TrainRatingMap map[int]map[int]float64
+
+	// Test set is what we use to benchmark the accuracy of our model
+	TestRatingMap  map[int]map[int]float64
 }
 
 func NewDataProcessor(ratingFilePath string, movieFilepath string) (*DataProcessor, error) {
+	rand.Seed(0)
+
 	var movieMap map[int]*Movie
-	var ratingMap map[int]map[int]float64
+	var trainSet map[int]map[int]float64
+	var testSet  map[int]map[int]float64
 	var loadErr error
 
 	movieMap, loadErr = loadMovies(movieFilepath)
@@ -25,7 +41,7 @@ func NewDataProcessor(ratingFilePath string, movieFilepath string) (*DataProcess
 		return nil, loadErr
 	}
 
-	ratingMap, loadErr = loadRatingsByUserID(ratingFilePath)
+	trainSet, loadErr = loadRatingsByUserID(ratingFilePath, MAX_NUM_USER)
 	if loadErr != nil {
 		return nil, loadErr
 	}
@@ -40,17 +56,31 @@ func NewDataProcessor(ratingFilePath string, movieFilepath string) (*DataProcess
 	// have made the code less readable. I'd rather make the logic clear for this module. The performance gain does not
 	// have a huge impact because it is only run once during server starts up.
 	i = 0
-	for userId := range ratingMap {
+	trainSetCount := 0
+	testSetCount := 0
+
+	testSet = make(map[int]map[int]float64)
+	for userId := range trainSet {
 		userIdToIndex[userId] = i
 		userIndexToId[i] = userId
 		i += 1
 
-		for movieId := range ratingMap[userId] {
-			movieMap[movieId].Ratings = append(movieMap[movieId].Ratings, ratingMap[userId][movieId])
+		if _, ok := testSet[userId]; !ok {
+			testSet[userId] = make(map[int]float64)
+		}
+
+		for movieId := range trainSet[userId] {
+			if rand.Float64() < TEST_RATIO {
+				testSetCount += 1
+				testSet[userId][movieId] = trainSet[userId][movieId]
+			} else {
+				trainSetCount += 1
+				movieMap[movieId].Ratings = append(movieMap[movieId].Ratings, trainSet[userId][movieId])
+			}
 		}
 	}
 
-	// Compute average rating for each movie:
+	// Compute average rating for each movie, while ignoring the data in test set
 	j = 0
 	for movieId := range movieMap {
 		movieIdToIndex[movieId] = j
@@ -60,13 +90,18 @@ func NewDataProcessor(ratingFilePath string, movieFilepath string) (*DataProcess
 		movieMap[movieId].AvgRating = Average(movieMap[movieId].Ratings)
 	}
 
+	fmtString := "CSV data are loaded with %d training samples and %d test samples from %d users on %d movies"
+	logMessage := fmt.Sprintf(fmtString, trainSetCount, testSetCount, i + 1, j + 1)
+	logrus.WithField("file", "lowrank.data_processor").Infof(logMessage)
+
 	return &DataProcessor{
+		MovieMap:       movieMap,
 		UserIDToIndex:  userIdToIndex,
 		UserIndexToID:  userIndexToId,
 		MovieIDToIndex: movieIdToIndex,
 		MovieIndexToID: movieIndexToId,
-		RatingMap:      ratingMap,
-		MovieMap:       movieMap,
+		TrainRatingMap: trainSet,
+		TestRatingMap:  testSet,
 	}, nil
 }
 
@@ -74,14 +109,22 @@ func NewDataProcessor(ratingFilePath string, movieFilepath string) (*DataProcess
 // matrix was supposed to be sparse but instead of filling it up with zero values. I've decided to set a movie's average
 // rating as its baseline. All zero valued spaces will be filled by a movie's average rating.
 func (dp *DataProcessor) GetRatingMatrix() *mat.Dense {
-	I, J := len(dp.RatingMap), len(dp.MovieMap)
+	I, J := len(dp.TrainRatingMap), len(dp.MovieMap)
 	R := mat.NewDense(I, J, nil)
 	for i := 0; i < I; i += 1 {
 		for j := 0; j < J; j += 1 {
 			userId := dp.UserIndexToID[i]
 			movieId := dp.MovieIndexToID[j]
-			if _, ok := dp.RatingMap[userId][movieId]; ok {
-				R.Set(i, j, dp.RatingMap[userId][movieId])
+
+			isTrain := true
+			if _, userExists := dp.TestRatingMap[userId]; userExists {
+				if _, movieExists := dp.TestRatingMap[userId][movieId]; movieExists {
+					isTrain = false
+				}
+			}
+
+			if _, ok := dp.TrainRatingMap[userId][movieId]; ok && isTrain {
+				R.Set(i, j, dp.TrainRatingMap[userId][movieId])
 			} else {
 				R.Set(i, j, dp.MovieMap[movieId].AvgRating)
 			}

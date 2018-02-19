@@ -14,12 +14,7 @@ func NewTokenAuthenticateHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, _ := r.Cookie("session_token")
 		if currentUser, err := FindUserByToken(db, cookie.Value); err == nil {
-			res := UserJSONResponse{
-				Username:     currentUser.Username,
-				SessionToken: currentUser.SessionToken,
-			}
-
-			if bytes, err := json.Marshal(res); err != nil {
+			if bytes, err := json.Marshal(currentUser); err != nil {
 				RenderError(w, err.Error(), http.StatusInternalServerError)
 			} else {
 				w.WriteHeader(http.StatusOK)
@@ -56,12 +51,7 @@ func NewSessionCreateHandler(db *gorm.DB) http.HandlerFunc {
 		cookie := http.Cookie{Name: "session_token", Value: user.SessionToken, Expires: expiration}
 		http.SetCookie(w, &cookie)
 
-		res := &UserJSONResponse{
-			Username:     user.Username,
-			SessionToken: user.SessionToken,
-		}
-
-		if bytes, err := json.Marshal(res); err != nil {
+		if bytes, err := json.Marshal(user); err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 		} else {
 			w.WriteHeader(http.StatusOK)
@@ -72,8 +62,7 @@ func NewSessionCreateHandler(db *gorm.DB) http.HandlerFunc {
 }
 
 type LogoutResponse struct {
-	Username    string `json:"username"`
-	IsLoggedOut bool   `json:"is_logged_out"`
+	Username string `json:"username"`
 }
 
 func NewSessionDestroyHandler(db *gorm.DB) http.HandlerFunc {
@@ -83,10 +72,7 @@ func NewSessionDestroyHandler(db *gorm.DB) http.HandlerFunc {
 			currentUser.ResetSessionToken()
 			db.Save(currentUser)
 
-			res := &LogoutResponse{
-				Username:    currentUser.Username,
-				IsLoggedOut: true,
-			}
+			res := &LogoutResponse{currentUser.Username}
 
 			if bytes, err := json.Marshal(res); err != nil {
 				RenderError(w, err.Error(), http.StatusInternalServerError)
@@ -97,6 +83,5 @@ func NewSessionDestroyHandler(db *gorm.DB) http.HandlerFunc {
 		} else {
 			RenderError(w, "User is not found", http.StatusBadRequest)
 		}
-
 	}
 }

@@ -46,7 +46,7 @@ class RatingRecord extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (Object.keys(this.props.movieRatings).length < 10 && Object.keys(nextProps.movieRatings).length === 10) {
+    if (Object.keys(nextProps.movieRatings).length > 10) {
       this.props.dispatchRecommendedMoviesFetch(this.props.session, nextProps.movieRatings);
     }
   }

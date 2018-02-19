@@ -8,9 +8,11 @@ import (
 	"gonum.org/v1/gonum/mat"
 	"math/rand"
 	"github.com/sirupsen/logrus"
+	"fmt"
 )
 
 const TEST_RATIO = 0.10
+const MAX_NUM_USER = 10000
 
 type DataProcessor struct {
 	MovieMap       map[int]*Movie
@@ -39,7 +41,7 @@ func NewDataProcessor(ratingFilePath string, movieFilepath string) (*DataProcess
 		return nil, loadErr
 	}
 
-	trainSet, loadErr = loadRatingsByUserID(ratingFilePath)
+	trainSet, loadErr = loadRatingsByUserID(ratingFilePath, MAX_NUM_USER)
 	if loadErr != nil {
 		return nil, loadErr
 	}
@@ -56,6 +58,7 @@ func NewDataProcessor(ratingFilePath string, movieFilepath string) (*DataProcess
 	i = 0
 	trainSetCount := 0
 	testSetCount := 0
+
 	testSet = make(map[int]map[int]float64)
 	for userId := range trainSet {
 		userIdToIndex[userId] = i
@@ -87,9 +90,9 @@ func NewDataProcessor(ratingFilePath string, movieFilepath string) (*DataProcess
 		movieMap[movieId].AvgRating = Average(movieMap[movieId].Ratings)
 	}
 
-	logrus.WithField(
-		"file", "lowrank.data_processor",
-	).Infof("CSV data are loaded with %d training data points and %d test data points", trainSetCount, testSetCount)
+	fmtString := "CSV data are loaded with %d training samples and %d test samples from %d users on %d movies"
+	logMessage := fmt.Sprintf(fmtString, trainSetCount, testSetCount, i + 1, j + 1)
+	logrus.WithField("file", "lowrank.data_processor").Infof(logMessage)
 
 	return &DataProcessor{
 		MovieMap:       movieMap,

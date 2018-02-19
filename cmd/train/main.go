@@ -28,6 +28,7 @@ func WriteToCSV(filepath string, movieFeatures map[int][]float64, featureDim int
 	}
 
 	var writerError error
+
 	// Write the header first
 	writerError = writer.Write(header)
 	if writerError != nil {
@@ -55,7 +56,7 @@ func main() {
 		FullTimestamp: true,
 	})
 
-	processor, err := lowrank.NewDataProcessor("dataset/ratings.csv", "dataset/movies.csv")
+	processor, err := lowrank.NewDataProcessor("megaset/ratings.csv", "megaset/movies.csv")
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -77,5 +78,5 @@ func main() {
 		featureMapByMovieID[movieID] = features
 	}
 
-	WriteToCSV("dataset/features.csv", featureMapByMovieID, featureDim)
+	WriteToCSV("megaset/features.csv", featureMapByMovieID, featureDim)
 }

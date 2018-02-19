@@ -143,11 +143,5 @@ We use 90% of our training data as the pure training set while the other 10% is 
 validation set to tune our hyper parameters such as how many features to use, what kind of regularization we should
 enforce, what is the learning rate and etc...
 
-
-| Trial | Feature Dimension | Regularization | Learning Rate | Iterations Num | RMSE        |
-|------:|------------------:|---------------:|--------------:|---------------:|------------:|
-| 1     | 1                 | 0              | 1e-4          | 500            |             |
-| 2     | 5                 | 0              | 1e-4          | 500            |             |
-| 3     | 10                | 0              | 1e-4          | 500            |             |
-| 4     | 20                | 0              | 1e-4          | 500            |             |
-| 5     | 40                | 0              | 1e-4          | 500            |             |
+For example, using 880564 training samples and 97963 validation samples from 10000 users on 45844 movies, with `feature
+dimension = 10`, `reg = 0`. The RMSE is approximately 0.98206.

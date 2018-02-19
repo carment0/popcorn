@@ -52,23 +52,13 @@ func NewUserCreateHandler(db *gorm.DB) http.HandlerFunc {
 		cookie := http.Cookie{Name: "session_token", Value: newUser.SessionToken, Expires: expiration}
 		http.SetCookie(w, &cookie)
 
-		res := &UserJSONResponse{
-			ID:       newUser.ID,
-			Username: newUser.Username,
-		}
-
-		if bytes, err := json.Marshal(res); err != nil {
+		if bytes, err := json.Marshal(newUser); err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 		} else {
 			w.WriteHeader(http.StatusOK)
 			w.Write(bytes)
 		}
 	}
-}
-
-type UserJSONResponse struct {
-	ID       uint   `json:"id"`
-	Username string `json:"username"`
 }
 
 func NewUserListHandler(db *gorm.DB) http.HandlerFunc {
@@ -79,15 +69,7 @@ func NewUserListHandler(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		res := []*UserJSONResponse{}
-		for _, user := range users {
-			res = append(res, &UserJSONResponse{
-				ID:       user.ID,
-				Username: user.Username,
-			})
-		}
-
-		if bytes, err := json.Marshal(res); err != nil {
+		if bytes, err := json.Marshal(users); err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 		} else {
 			w.WriteHeader(http.StatusOK)

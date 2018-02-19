@@ -137,3 +137,17 @@ grad_pred = model_pred - R
 grad_u = np.dot(grad_pred, M) + (reg * U)
 grad_m = np.dot(grad_pred.T, U) + (reg * M)
 ```
+
+### Tuning Hyperparameters
+We use 90% of our training data as the pure training set while the other 10% is our validation set. We will use this
+validation set to tune our hyper parameters such as how many features to use, what kind of regularization we should
+enforce, what is the learning rate and etc...
+
+
+| Trial | Feature Dimension | Regularization | Learning Rate | Iterations Num | RMSE        |
+|------:|------------------:|---------------:|--------------:|---------------:|------------:|
+| 1     | 1                 | 0              | 1e-4          | 500            |             |
+| 2     | 5                 | 0              | 1e-4          | 500            |             |
+| 3     | 10                | 0              | 1e-4          | 500            |             |
+| 4     | 20                | 0              | 1e-4          | 500            |             |
+| 5     | 40                | 0              | 1e-4          | 500            |             |

@@ -14,7 +14,7 @@ import (
 )
 
 func WriteToCSV(filepath string, movieFeatures map[int][]float64, featureDim int) error {
-	csvFile, fileErr := os.Create("dataset/features.csv")
+	csvFile, fileErr := os.Create(filepath)
 	if fileErr != nil {
 		return fileErr
 	}
@@ -63,7 +63,10 @@ func main() {
 	featureDim := 10
 	R := processor.GetRatingMatrix()
 	approx := lowrank.NewApproximator(R, featureDim)
-	approx.Train(500, 25, 0, 5e-5)
+	approx.DataProcessor = processor
+
+	// Start training
+	approx.Train(100, 5, 0, 4e-6)
 
 	J, _ := approx.MovieLatent.Dims()
 	featureMapByMovieID := make(map[int][]float64)

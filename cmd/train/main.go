@@ -30,7 +30,7 @@ func main() {
 	approx.DataProcessor = processor
 
 	// Start training
-	approx.Train(5, 1, 0.02, 1e-5)
+	approx.Train(50, 1, 0.02, 1e-5)
 
 	J, _ := approx.MovieLatent.Dims()
 	featureMapByMovieID := make(map[int][]float64)

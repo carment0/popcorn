@@ -12,6 +12,12 @@ import { MOVIE_SKIPPED } from './movie.action';
 import { MOVIE_RATING_POST_SUCCESS, MOVIE_RATING_RECORDED, MOVIE_RATINGS_FETCH_SUCCESS } from './rating.action';
 
 
+/**
+ * All movie state is an object that maps movie ID to a dictionary of movie information such as IMDB ID, year, average
+ * ratings and etc...
+ * @param {Set} state
+ * @param {object} action
+ */
 function allMovieReducer(state = {}, action) {
   Object.freeze(state);
 
@@ -32,6 +38,11 @@ function allMovieReducer(state = {}, action) {
   }
 }
 
+/**
+ * Popular movie state is a set of movie ID's
+ * @param {Set} state
+ * @param {object} action
+ */
 function popularMovieReducer(state = new Set(), action) {
   Object.freeze(state);
 
@@ -51,15 +62,21 @@ function popularMovieReducer(state = new Set(), action) {
   }
 }
 
+/**
+ * Recommended movie state is a set of movie ID's
+ * @param {Set} state
+ * @param {object} action
+ */
 function recommendedMovieReducer(state = new Set(), action) {
   Object.freeze(state);
 
   switch (action.type) {
     case RECOMMENDED_MOVIES_FETCH_SUCCESS:
+      const newState = new Set();
       action.payload.forEach((movie) => {
-        state.add(movie.id);
+        newState.add(movie.id);
       });
-      return state;
+      return newState;
 
     case RECOMMENDED_MOVIES_FETCH_FAIL:
       console.log('Failed to fetch recommended movies', action.error);
@@ -70,6 +87,11 @@ function recommendedMovieReducer(state = new Set(), action) {
   }
 }
 
+/**
+ * Skipped movie state is a set of movie ID's
+ * @param {Set} state
+ * @param {object} action
+ */
 function skippedMovieReducer(state = new Set(), action) {
   Object.freeze(state);
 
@@ -83,6 +105,11 @@ function skippedMovieReducer(state = new Set(), action) {
   }
 }
 
+/**
+ * Rated movie is a set of movie ID's
+ * @param {Set} state
+ * @param {object} action
+ */
 function ratedMovieReducer(state = new Set(), action) {
   Object.freeze(state);
 
@@ -103,8 +130,6 @@ function ratedMovieReducer(state = new Set(), action) {
   }
 }
 
-// NOTE: The keys (popular, recommended, and skipped) are holding a set while the key 'all' is holding all
-// the data of the movies. This is to minimize data duplication and to improve performance of front end.
 export default combineReducers({
   all: allMovieReducer,
   popular: popularMovieReducer,

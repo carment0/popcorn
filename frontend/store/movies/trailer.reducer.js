@@ -6,8 +6,15 @@
 import merge from 'lodash/merge';
 import { MOVIE_TRAILER_FETCH_SUCCESS, MOVIE_TRAILER_FETCH_FAIL } from './trailer.action';
 
+
 const YouTube = 'YouTube';
 
+/**
+ * Movie trailer state is a map of movie ID to an array of YouTube video keys. The key is used for loading the video from
+ * YouTube directly.
+ * @param {object} state
+ * @param {object} action
+ */
 export default function movieTrailerReducer(state = {}, action) {
   Object.freeze(state);
 

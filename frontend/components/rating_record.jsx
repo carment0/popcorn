@@ -13,7 +13,6 @@ import RatedMovieItem from './rated_movie_item';
 
 // Store imports
 import { movieDetailFetch } from '../store/movies/detail.action';
-import { recommendedMoviesFetch } from '../store/movies/movie.action';
 
 // Style imports
 import './rating_record.scss';
@@ -21,17 +20,17 @@ import './rating_record.scss';
 
 class RatingRecord extends React.Component {
   static propTypes = {
-    session: PropTypes.object.isRequired,
     movies: PropTypes.object.isRequired,
     movieRatings: PropTypes.object.isRequired,
     movieDetails: PropTypes.object.isRequired,
-    dispatchMovieDetailFetch: PropTypes.func.isRequired,
-    dispatchRecommendedMoviesFetch: PropTypes.func.isRequired
+    dispatchMovieDetailFetch: PropTypes.func.isRequired
   };
 
   get ratedMovies() {
     const ratedMovieIds = Object.keys(this.props.movieRatings);
-    return ratedMovieIds.map((movieId) => {
+    return ratedMovieIds.filter((movieId) => {
+      return this.props.movies.all[movieId] !== undefined;
+    }).map((movieId) => {
       const movie = this.props.movies.all[movieId];
       return (
         <RatedMovieItem
@@ -43,16 +42,6 @@ class RatingRecord extends React.Component {
           dispatchMovieDetailFetch={this.props.dispatchMovieDetailFetch} />
       );
     });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (Object.keys(nextProps.movieRatings).length < 10) {
-      return;
-    }
-
-    if (Object.keys(nextProps.movieRatings).length !== Object.keys(this.props.movieRatings).length) {
-      this.props.dispatchRecommendedMoviesFetch(this.props.session, nextProps.movieRatings);
-    }
   }
 
   render() {
@@ -68,17 +57,15 @@ class RatingRecord extends React.Component {
 
 const mapReduxStateToProps = (state) => {
   return {
-    session: state.session,
     movies: state.movies,
     movieRatings: state.movieRatings,
-    movieDetails: state.movieDetails,
+    movieDetails: state.movieDetails
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dispatchMovieDetailFetch: (imdbId) => dispatch(movieDetailFetch(imdbId)),
-    dispatchRecommendedMoviesFetch: (session, ratings) => dispatch(recommendedMoviesFetch(session, ratings))
+    dispatchMovieDetailFetch: (imdbId) => dispatch(movieDetailFetch(imdbId))
   };
 };
 

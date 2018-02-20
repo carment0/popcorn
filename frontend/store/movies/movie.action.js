@@ -50,27 +50,39 @@ export const RECOMMENDED_MOVIES_FETCH_SUCCESS = 'RECOMMENDED_MOVIES_FETCH_SUCCES
 export const RECOMMENDED_MOVIES_FETCH_FAIL = 'RECOMMENDED_MOVIES_FETCH_FAIL';
 
 /**
- * There are two types of recommendation fetching: (1) user is authenticated and user in session object is not null, (2)
- * user is anonymous and does not have an account. If user is authenticated, we only need to make a request to the
- * endpoint because server will authenticate using client's session token. However, just to be safe, send the user ID
- * anyways. If user is not authenticated, then we must submit a map of movie ID to movie ratings.
- * @param {number} userId
+ * General recommendations are for anonymouse users who are new to our site. This function requires a map of movie ID to
+ * rating value submitted by the user.
  * @param {object} ratingMap
  * @returns {Promise}
  */
 export const recommendedMoviesFetch = (session, ratings) => (dispatch) => {
-  if (session.currentUser) {
-    return request.get(`api/users/${session.currentUser.id}/recommend`)
-      .then((res) => {
-        return dispatch({
-          type: RECOMMENDED_MOVIES_FETCH_SUCCESS,
-          payload: res.data
-        });
-      })
-      .catch((error) => dispatch({ type: RECOMMENDED_MOVIES_FETCH_FAIL, error }));
-  }
-
   return request.post('api/movies/recommend', { ratings })
+    .then((res) => {
+      return dispatch({
+        type: RECOMMENDED_MOVIES_FETCH_SUCCESS,
+        payload: res.data
+      });
+    })
+    .catch((error) => dispatch({ type: RECOMMENDED_MOVIES_FETCH_FAIL, error }));
+};
+
+/**
+ * Personalized recommendations are for authenticated users who have rated a good number of movies
+ * @param {object} session
+ * @param {object} yearRange
+ * @param {number} percentile
+ * @returns {Promise}
+ */
+export const personalizedRecommendedMoviesFetch = (session, yearRange, percentile) => (dispatch) => {
+  const config = {
+    params: {
+      max: yearRange.maxYear,
+      min: yearRange.minYear,
+      percent: percentile
+    }
+  };
+
+  return request.get(`api/users/${session.currentUser.id}/recommend`, config)
     .then((res) => {
       return dispatch({
         type: RECOMMENDED_MOVIES_FETCH_SUCCESS,

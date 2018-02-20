@@ -13,7 +13,7 @@ import RatingRecord from '../components/rating_record';
 import RecommendationIndex from '../components/recommender/recommendation_index';
 
 // Store imports
-import { allMoviesFetch } from '../store/movies/movie.action';
+import { allMoviesFetch, personalizedRecommendedMoviesFetch } from '../store/movies/movie.action';
 
 // Style imports
 import './recommender.scss';
@@ -21,15 +21,38 @@ import './recommender.scss';
 
 class Recommender extends React.Component {
   static propTypes = {
-    movies: PropTypes.object.isRequired,
     session: PropTypes.object.isRequired,
+    movies: PropTypes.object.isRequired,
     movieRatings: PropTypes.object.isRequired,
-    dispatchAllMovieFetch: PropTypes.func.isRequired
+    movieYearRange: PropTypes.object.isRequired,
+    moviePopularityPercentile: PropTypes.number.isRequired,
+    dispatchAllMovieFetch: PropTypes.func.isRequired,
+    dispatchPersonalizedRecommendedMoviesFetch: PropTypes.func.isRequired
   };
 
-  componentWillReceive(nextProps) {
-    if (this.props.movies.rated.size !== nextProps.movies.rated.size) {
-      console.log('Rated movie set has changed!');
+  componentWillReceiveProps(nextProps) {
+    if (this.props.session.currentUser !== null) {
+      // When user just signed in and fetched the stored ratings from database, fetch recommendations.
+      if (Object.keys(this.props.movieRatings).length === 0 && Object.keys(nextProps.movieRatings).length >= 10) {
+        this.props.dispatchPersonalizedRecommendedMoviesFetch(
+          this.props.session,
+          this.props.movieYearRange,
+          this.props.moviePopularityPercentile
+        );
+      }
+
+      // When user modifies the query parameters, fetch recommendations.
+      if (
+        this.props.movieYearRange.minYear !== nextProps.movieYearRange.minYear
+        || this.props.movieYearRange.maxYear !== nextProps.movieYearRange.maxYear
+        || this.props.moviePopularityPercentile !== nextProps.moviePopularityPercentile
+      ) {
+        this.props.dispatchPersonalizedRecommendedMoviesFetch(
+          this.props.session,
+          nextProps.movieYearRange,
+          nextProps.moviePopularityPercentile
+        );
+      }
     }
   }
 
@@ -37,14 +60,6 @@ class Recommender extends React.Component {
     if (Object.keys(this.props.movies.all).length === 0) {
       this.props.dispatchAllMovieFetch();
     }
-  }
-
-  get greeting() {
-    if (this.props.session.currentUser) {
-      return `Hi, ${this.props.session.currentUser.username}`;
-    }
-
-    return 'Hello there';
   }
 
   render() {
@@ -71,11 +86,16 @@ class Recommender extends React.Component {
 const mapReduxStateToProps = (state) => ({
   session: state.session,
   movies: state.movies,
-  movieRatings: state.movieRatings
+  movieRatings: state.movieRatings,
+  movieYearRange: state.movieYearRange,
+  moviePopularityPercentile: state.moviePopularityPercentile
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  dispatchAllMovieFetch: () => dispatch(allMoviesFetch())
+  dispatchAllMovieFetch: () => dispatch(allMoviesFetch()),
+  dispatchPersonalizedRecommendedMoviesFetch: (session, yearRange, percentile) => {
+    return dispatch(personalizedRecommendedMoviesFetch(session, yearRange, percentile));
+  }
 });
 
 export default connect(mapReduxStateToProps, mapDispatchToProps)(Recommender);

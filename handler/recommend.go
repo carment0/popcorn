@@ -11,6 +11,9 @@ import (
 	"gonum.org/v1/gonum/mat"
 	"net/http"
 	"popcorn/model"
+	"strconv"
+	"time"
+	"math/rand"
 )
 
 type RecommendRequest struct {
@@ -50,16 +53,36 @@ func NewMovieRecommendationHandler(db *gorm.DB) http.HandlerFunc {
 
 func NewPersonalizedRecommendationHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var maxYear uint = 2018
+		var minYear uint = 1930
+
+		if qMax := r.URL.Query().Get("max"); qMax != "" {
+			if intValue, parseErr := strconv.ParseInt(qMax, 10, 64); parseErr == nil {
+				maxYear = uint(intValue)
+			}
+		}
+
+		if qMin := r.URL.Query().Get("min"); qMin != "" {
+			if intValue, parseErr := strconv.ParseInt(qMin, 10, 64); parseErr == nil {
+				minYear = uint(intValue)
+			}
+		}
+
 		vars := mux.Vars(r)
 
 		var currentUser model.User
-		if err := db.Where("id = ?", vars["id"]).First(&currentUser).Error; err != nil {
+		if err := db.Where("id = ?", vars["id"]).Preload("Ratings").First(&currentUser).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				RenderError(w, "user does not exist", http.StatusBadRequest)
 				return
 			}
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		rated := map[uint]bool{}
+		for _, rating := range currentUser.Ratings {
+			rated[rating.MovieID] = true
 		}
 
 		var movies []*model.Movie
@@ -82,19 +105,22 @@ func NewPersonalizedRecommendationHandler(db *gorm.DB) http.HandlerFunc {
 		predictedRatings := mat.NewDense(1, len(movies), nil)
 		predictedRatings.Mul(U, M.T())
 
+		rand.Seed(time.Now().UTC().UnixNano())
 		// Fetch 10 recommendations
 		recommendations := make([]*model.Movie, 0, 10)
-		for j := 0; j < len(movies); j += 1 {
-			if movies[j].Year < 2000 || movies[j].NumRating < 100 {
+
+		for len(recommendations) != 10 {
+			j := rand.Intn(len(movies) - 1)
+			if rated[movies[j].ID] {
 				continue
 			}
 
-			if predictedRatings.At(0, j) >= 4.0 {
-				recommendations = append(recommendations, movies[j])
+			if predictedRatings.At(0, j) < 3.0 {
+				continue
 			}
 
-			if len(recommendations) == 10 {
-				break
+			if movies[j].Year >= minYear && movies[j].Year <= maxYear && movies[j].NumRating >= 20{
+				recommendations = append(recommendations, movies[j])
 			}
 		}
 

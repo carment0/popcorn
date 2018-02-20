@@ -56,10 +56,11 @@ function recommendedMovieReducer(state = new Set(), action) {
 
   switch (action.type) {
     case RECOMMENDED_MOVIES_FETCH_SUCCESS:
+      const newState = new Set();
       action.payload.forEach((movie) => {
-        state.add(movie.id);
+        newState.add(movie.id);
       });
-      return state;
+      return newState;
 
     case RECOMMENDED_MOVIES_FETCH_FAIL:
       console.log('Failed to fetch recommended movies', action.error);

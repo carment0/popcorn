@@ -25,7 +25,7 @@ func main() {
 	approx.DataProcessor = processor
 
 	// Start training
-	approx.Train(300, 1, 0, 1e-5)
+	approx.Train(5, 1, 0.02, 1e-5)
 
 	J, _ := approx.MovieLatent.Dims()
 	featureMapByMovieID := make(map[int][]float64)
@@ -36,6 +36,6 @@ func main() {
 		featureMapByMovieID[movieID] = features
 	}
 
-	writeFeaturesToCSV("fullset/features.csv", featureMapByMovieID, featureDim)
-	writePopularityToCSV("fullset/popularity.csv", processor.MovieMap)
+	writeFeaturesToCSV("dataset/features.csv", featureMapByMovieID, featureDim)
+	writePopularityToCSV("dataset/popularity.csv", processor.MovieMap)
 }

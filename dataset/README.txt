@@ -1,11 +1,11 @@
 Summary
 =======
 
-This dataset (ml-latest-small) describes 5-star rating and free-text tagging activity from [MovieLens](http://movielens.org), a movie recommendation service. It contains 100004 ratings and 1296 tag applications across 9125 movies. These data were created by 671 users between January 09, 1995 and October 16, 2016. This dataset was generated on October 17, 2016.
+This dataset (ml-latest) describes 5-star rating and free-text tagging activity from [MovieLens](http://movielens.org), a movie recommendation service. It contains 26024289 ratings and 753170 tag applications across 45843 movies. These data were created by 270896 users between January 09, 1995 and August 04, 2017. This dataset was generated on August 04, 2017.
 
-Users were selected at random for inclusion. All selected users had rated at least 20 movies. No demographic information is included. Each user is represented by an id, and no other information is provided.
+Users were selected at random for inclusion. All selected users had rated at least 1 movies. No demographic information is included. Each user is represented by an id, and no other information is provided.
 
-The data are contained in the files `links.csv`, `movies.csv`, `ratings.csv` and `tags.csv`. More details about the contents and use of all these files follows.
+The data are contained in the files `genome-scores.csv`, `genome-tags.csv`, `links.csv`, `movies.csv`, `ratings.csv` and `tags.csv`. More details about the contents and use of all these files follows.
 
 This is a *development* dataset. As such, it may change over time and is not an appropriate dataset for shared research results. See available *benchmark* datasets if that is your intent.
 
@@ -19,7 +19,7 @@ Neither the University of Minnesota nor any of the researchers involved can guar
 
 * The user may not state or imply any endorsement from the University of Minnesota or the GroupLens Research Group.
 * The user must acknowledge the use of the data set in publications resulting from the use of the data set (see below for citation information).
-* The user may redistribute the data set, including transformations, so long as it is distributed under these same license conditions.
+* The user may not redistribute the data without separate permission.
 * The user may not use this information for any commercial or revenue-bearing purposes without first obtaining permission from a faculty member of the GroupLens Research Project at the University of Minnesota.
 * The executable software scripts are provided "as is" without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. The entire risk as to the quality and performance of them is with you. Should the program prove defective, you assume the cost of all necessary servicing, repair or correction.
 
@@ -33,7 +33,7 @@ Citation
 
 To acknowledge use of the dataset in publications, please cite the following paper:
 
-> F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets: History and Context. ACM Transactions on Interactive Intelligent Systems (TiiS) 5, 4, Article 19 (December 2015), 19 pages. DOI=<http://dx.doi.org/10.1145/2827872>
+> F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets: History and Context. ACM Transactions on Interactive Intelligent Systems (TiiS) 5, 4: 19:1–19:19. <https://doi.org/10.1145/2827872>
 
 
 Further Information About GroupLens
@@ -58,10 +58,12 @@ Formatting and Encoding
 
 The dataset files are written as [comma-separated values](http://en.wikipedia.org/wiki/Comma-separated_values) files with a single header row. Columns that contain commas (`,`) are escaped using double-quotes (`"`). These files are encoded as UTF-8. If accented characters in movie titles or tag values (e.g. Misérables, Les (1995)) display incorrectly, make sure that any program reading the data, such as a text editor, terminal, or script, is configured for UTF-8.
 
+
 User Ids
 --------
 
 MovieLens users were selected at random for inclusion. Their ids have been anonymized. User ids are consistent between `ratings.csv` and `tags.csv` (i.e., the same id refers to the same user across the two files).
+
 
 Movie Ids
 ---------
@@ -82,6 +84,7 @@ Ratings are made on a 5-star scale, with half-star increments (0.5 stars - 5.0 s
 
 Timestamps represent seconds since midnight Coordinated Universal Time (UTC) of January 1, 1970.
 
+
 Tags Data File Structure (tags.csv)
 -----------------------------------
 
@@ -94,6 +97,7 @@ The lines within this file are ordered first by userId, then, within user, by mo
 Tags are user-generated metadata about movies. Each tag is typically a single word or short phrase. The meaning, value, and purpose of a particular tag is determined by each user.
 
 Timestamps represent seconds since midnight Coordinated Universal Time (UTC) of January 1, 1970.
+
 
 Movies Data File Structure (movies.csv)
 ---------------------------------------
@@ -126,6 +130,7 @@ Genres are a pipe-separated list, and are selected from the following:
 * Western
 * (no genres listed)
 
+
 Links Data File Structure (links.csv)
 ---------------------------------------
 
@@ -140,6 +145,33 @@ imdbId is an identifier for movies used by <http://www.imdb.com>. E.g., the movi
 tmdbId is an identifier for movies used by <https://www.themoviedb.org>. E.g., the movie Toy Story has the link <https://www.themoviedb.org/movie/862>.
 
 Use of the resources listed above is subject to the terms of each provider.
+
+
+Tag Genome (genome-scores.csv and genome-tags.csv)
+-------------------------------------------------
+
+This data set includes a current copy of the Tag Genome.
+
+[genome-paper]: http://files.grouplens.org/papers/tag_genome.pdf
+
+The tag genome is a data structure that contains tag relevance scores for movies.  The structure is a dense matrix: each movie in the genome has a value for *every* tag in the genome.
+
+As described in [this article][genome-paper], the tag genome encodes how strongly movies exhibit particular properties represented by tags (atmospheric, thought-provoking, realistic, etc.). The tag genome was computed using a machine learning algorithm on user-contributed content including tags, ratings, and textual reviews.
+
+The genome is split into two files.  The file `genome-scores.csv` contains movie-tag relevance data in the following format:
+
+    movieId,tagId,relevance
+
+The second file, `genome-tags.csv`, provides the tag descriptions for the tag IDs in the genome file, in the following format:
+
+    tagId,tag
+
+The `tagId` values are generated when the data set is exported, so they may vary from version to version of the MovieLens data sets.
+
+Please include the following citation if referencing tag genome data:
+
+> Jesse Vig, Shilad Sen, and John Riedl. 2012. The Tag Genome: Encoding Community Knowledge to Support Novel Interaction. ACM Trans. Interact. Intell. Syst. 2, 3: 13:1–13:44. <https://doi.org/10.1145/2362394.2362395>
+
 
 Cross-Validation
 ----------------

@@ -7,7 +7,7 @@ import merge from 'lodash/merge';
 import { SET_MOVIE_YEAR_RANGE } from './year_range.action';
 
 const defaultState = {
-  minYear: 1930,
+  minYear: 1990,
   maxYear: 2018
 };
 

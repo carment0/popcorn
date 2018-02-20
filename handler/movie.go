@@ -32,7 +32,10 @@ func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {
 func NewPopularMovieListHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var movies []*model.Movie
-		if err := db.Limit(300).Order("num_rating desc").Order("average_rating desc").Find(&movies).Error; err != nil {
+		if err := db.Limit(500).
+			Order("num_rating desc").
+			Order("average_rating desc").
+			Find(&movies).Error; err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

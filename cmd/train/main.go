@@ -9,12 +9,17 @@ import (
 	"popcorn/lowrank"
 )
 
-func main() {
+const INPUT_DIR = "fullset/"
+const OUTPUT_DIR = "dataset/"
+
+func init() {
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
 	})
+}
 
-	processor, err := lowrank.NewDataProcessor("fullset/ratings.csv", "fullset/movies.csv")
+func main() {
+	processor, err := lowrank.NewDataProcessor(INPUT_DIR+"ratings.csv", INPUT_DIR+"movies.csv")
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -36,6 +41,6 @@ func main() {
 		featureMapByMovieID[movieID] = features
 	}
 
-	writeFeaturesToCSV("dataset/features.csv", featureMapByMovieID, featureDim)
-	writePopularityToCSV("dataset/popularity.csv", processor.MovieMap)
+	writeFeaturesToCSV(OUTPUT_DIR+"features.csv", featureMapByMovieID, featureDim)
+	writePopularityToCSV(OUTPUT_DIR+"popularity.csv", processor.MovieMap)
 }

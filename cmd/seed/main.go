@@ -19,11 +19,15 @@ const (
 	LocalSSLMode    = "disable"
 )
 
-func main() {
+const DIR = "dataset/"
+
+func init() {
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
 	})
+}
 
+func main() {
 	dbCredentials := os.Getenv("DATABASE_URL")
 
 	if dbCredentials == "" {
@@ -45,7 +49,7 @@ func main() {
 	var metadataMap map[uint]map[string]string
 	var loadError error
 
-	movieModelsMap, loadError = loadMoviesCSVFile("dataset/movies.csv")
+	movieModelsMap, loadError = loadMoviesCSVFile(DIR + "movies.csv")
 	if loadError != nil {
 		logrus.Fatal("Failed to load movie models from CSV data:", loadError)
 		return
@@ -53,7 +57,7 @@ func main() {
 		logrus.Info("Movie models are loaded from csv files")
 	}
 
-	moviePopularityMap, loadError = loadPopularityCSVFile("dataset/popularity.csv")
+	moviePopularityMap, loadError = loadPopularityCSVFile(DIR + "popularity.csv")
 	if loadError != nil {
 		logrus.Fatal("Failed to load movie popularities from CSV data:", loadError)
 		return
@@ -61,7 +65,7 @@ func main() {
 		logrus.Info("Movie popularities are loaded from csv files")
 	}
 
-	metadataMap, loadError = loadMetadataCSVFile("dataset/links.csv")
+	metadataMap, loadError = loadMetadataCSVFile(DIR + "links.csv")
 	if loadError != nil {
 		logrus.Fatal("Failed to load movie metadata from CSV data:", loadError)
 		return
@@ -69,7 +73,7 @@ func main() {
 		logrus.Info("Movie metadata are loaded from csv files")
 	}
 
-	featuresMap, loadError = loadFeatureCSVFile("dataset/features.csv")
+	featuresMap, loadError = loadFeatureCSVFile(DIR + "features.csv")
 	if loadError != nil {
 		logrus.Error("Failed to load movie features from CSV data:", loadError)
 	} else {

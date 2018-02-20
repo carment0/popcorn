@@ -6,7 +6,12 @@
 import merge from 'lodash/merge';
 import { MOVIE_DETAIL_FETCH_SUCCESS, MOVIE_DETAIL_FETCH_FAIL } from './detail.action';
 
-
+/**
+ * Movie detail state is a map of movie ID to a dictionary of details of the movie such as movie poster, movie overview,
+ * cast, director and etc...
+ * @param {object} state
+ * @param {object} action
+ */
 export default function movieDetailReducer(state = {}, action) {
   Object.freeze(state);
 

@@ -11,6 +11,11 @@ const defaultState = {
   maxYear: 2018
 };
 
+/**
+ * Movie year range state is an object with two keys, minYear and maxYear.
+ * @param {object} state
+ * @param {object} action
+ */
 export default function movieYearRangeReducer(state = defaultState, action) {
   Object.freeze(state);
 

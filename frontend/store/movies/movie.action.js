@@ -69,6 +69,8 @@ export const recommendedMoviesFetch = (session, ratings) => (dispatch) => {
 /**
  * Personalized recommendations are for authenticated users who have rated a good number of movies
  * @param {object} session
+ * @param {object} yearRange
+ * @param {number} percentile
  * @returns {Promise}
  */
 export const personalizedRecommendedMoviesFetch = (session, yearRange, percentile) => (dispatch) => {

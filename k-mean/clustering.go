@@ -79,21 +79,76 @@ func main() {
 func findKMeans(featureMap map[string][]float64, centroids map[int][]float64) {
   var currentCent = centroids
   // var changeCent = true;
-  // var updatedCent map[int][]float64
-  var movieCentAssignment map[string]int
+  var updatedCent map[int][]float64
+  var movieCentAssignment map[int][]string
 
-  movieCentAssignment = assigningClosetCent(featureMap, currentCent)
-  fmt.Println(movieCentAssignment)
   // for changeCent == true {
+    movieCentAssignment = assigningClosetCent(featureMap, currentCent)
+    updatedCent = updateCentWithMean(movieCentAssignment, featureMap, currentCent)
+
   // }
 }
 
-func assigningClosetCent(featureMap map[string][]float64, centroids map[int][]float64) map[string]int {
-  var assigned map[string]int
+func isEqual(currentCent, updatedCent map[int][]float64) bool {
+  
+}
+
+func updateCentWithMean(movieCentAssignment map[int][]string, featureMap map[string][]float64,  centroids map[int][]float64) map[int][]float64 {
+  var updated map[int][]float64
+  updated = make(map[int][]float64)
+
+  for k1, v1 := range movieCentAssignment {
+    var sum []float64
+    if len(v1) == 0 {
+      updated[k1] = centroids[k1]
+    } else {
+      for _, val := range v1 {
+        feature := featureMap[val]
+        if len(sum) == 0 {
+          sum = feature
+        } else {
+          sum = sumArray(sum, feature)
+        }
+      }
+      length := len(v1)
+      meanSum := divideArray(sum, length)
+      updated[k1] = meanSum;
+    }
+  }
+  return updated
+}
+
+func divideArray(arr []float64, num int) []float64 {
+  floatNum := float64(num)
+  var array []float64
+  for _, val := range arr {
+    result := val / floatNum
+    array = append(array, result)
+  }
+  return array
+}
+
+func sumArray(prevSum, feature []float64) []float64 {
+  var array []float64
+  for idx, val := range prevSum {
+    result := val + feature[idx]
+    array = append(array, result)
+  }
+  return array
+}
+
+func assigningClosetCent(featureMap map[string][]float64, centroids map[int][]float64) map[int][]string {
+  var assigned map[int][]string
   var minDist float64
   var centID int
+  var arr []string
 
-  assigned = make(map[string]int)
+  assigned = make(map[int][]string)
+  for k, _ := range centroids {
+    arr := []string{}
+    assigned[k] = arr
+  }
+
   for k1, v1 := range featureMap {
     for k2, v2 := range centroids {
       dist := getDistance(v1, v2)
@@ -102,8 +157,14 @@ func assigningClosetCent(featureMap map[string][]float64, centroids map[int][]fl
         centID = k2
       }
     }
-
-    assigned[k1] = centID
+    if len(assigned[centID]) != 0 {
+      arr = assigned[centID]
+      arr = append(arr, k1)
+      assigned[centID] = arr
+    } else {
+      arr := []string{k1}
+      assigned[centID] = arr
+    }
   }
   return assigned
 }

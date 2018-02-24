@@ -29,7 +29,7 @@ func ReadFromCSV(filepath string) (map[string][]float64, error) {
       }
     } else {
       var features []float64
-      for i := 1; i <= 10; i += 1 {
+      for i := 1; i <= 2; i += 1 { //<<< changed the feature #
         string := row[i]
         intager, err := strconv.ParseFloat(string, 64)
         if err != nil {
@@ -70,27 +70,61 @@ func main() {
     fmt.Println("Failed to read CSV", err)
   } else {
     fmt.Println("Done reading")
+    center := center(featureMap)
+    fmt.Println(center)
+    start := time.Now()
     movieIdKeys := movieIdKeys(featureMap)
-    centroids := initCentroids(featureMap, movieIdKeys, 10)
+    centroids := initCentroids(featureMap, movieIdKeys, 1) // <<<<< changed the cluster
     findKMeans(featureMap, centroids)
+    elapsed := time.Since(start)
+    fmt.Printf("kmeans took %s", elapsed)
   }
 }
 
-func findKMeans(featureMap map[string][]float64, centroids map[int][]float64) {
+func center(featureMap map[string][]float64) []float64 {
+  var sum []float64
+  for _, v := range featureMap {
+    if len(sum) == 0 {
+      sum = v
+    } else {
+      sum = sumArray(sum, v)
+    }
+
+  }
+  sum = divideArray(sum, 15382) // <<<<< change the num
+  return sum
+}
+
+func findKMeans(featureMap map[string][]float64, centroids map[int][]float64) map[int][]float64 {
   var currentCent = centroids
-  // var changeCent = true;
+  var changeCent = true;
   var updatedCent map[int][]float64
   var movieCentAssignment map[int][]string
+  var equal bool
 
-  // for changeCent == true {
+  for changeCent == true {
     movieCentAssignment = assigningClosetCent(featureMap, currentCent)
     updatedCent = updateCentWithMean(movieCentAssignment, featureMap, currentCent)
-
-  // }
+    equal = isEqual(currentCent, updatedCent)
+    if equal {
+      changeCent = false
+    } else {
+      currentCent = updatedCent
+    }
+  }
+  fmt.Println(currentCent)
+  return currentCent
 }
 
 func isEqual(currentCent, updatedCent map[int][]float64) bool {
-  
+  for k, v := range currentCent {
+    for idx, val := range v {
+      if val != updatedCent[k][idx] {
+        return false
+      }
+    }
+  }
+  return true
 }
 
 func updateCentWithMean(movieCentAssignment map[int][]string, featureMap map[string][]float64,  centroids map[int][]float64) map[int][]float64 {
@@ -182,7 +216,7 @@ func initCentroids(featureMap map[string][]float64, keys []string, centCount int
   var centroids = make(map[int][]float64)
   for i := 0; i < centCount; i += 1 {
     rand.Seed(int64(time.Now().Nanosecond()))
-    idx := rand.Intn(100)
+    idx := rand.Intn(len(featureMap))
     movieId := keys[idx]
     feature := featureMap[movieId]
     centroids[i] = feature

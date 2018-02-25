@@ -9,6 +9,11 @@ import (
   "math/rand"
   "math"
   "time"
+  "gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
+  "image/color"
+	// "gonum.org/v1/plot/plotutil"
+	"gonum.org/v1/plot/vg"
 )
 
 func ReadFromCSV(filepath string) (map[string][]float64, error) {
@@ -65,37 +70,67 @@ func ReadFromCSV(filepath string) (map[string][]float64, error) {
 // }
 
 func main() {
-  featureMap, err := ReadFromCSV("../dataset/features.csv")
+  rand.Seed(time.Now().Unix())
+  featureMap, err := ReadFromCSV("../dataset/testing.csv") // <<< testing csv
   if err != nil {
     fmt.Println("Failed to read CSV", err)
   } else {
     fmt.Println("Done reading")
-    center := center(featureMap)
-    fmt.Println(center)
+    // center := center(featureMap)
+    // fmt.Println(center)
     start := time.Now()
     movieIdKeys := movieIdKeys(featureMap)
-    centroids := initCentroids(featureMap, movieIdKeys, 1) // <<<<< changed the cluster
-    findKMeans(featureMap, centroids)
+    centroids := initCentroids(featureMap, movieIdKeys, 1000) // <<<<< changed the cluster
+    _, clusters := findKMeans(featureMap, centroids)
     elapsed := time.Since(start)
-    fmt.Printf("kmeans took %s", elapsed)
-  }
-}
+    fmt.Printf("kmeans took %s\n", elapsed)
 
-func center(featureMap map[string][]float64) []float64 {
-  var sum []float64
-  for _, v := range featureMap {
-    if len(sum) == 0 {
-      sum = v
-    } else {
-      sum = sumArray(sum, v)
+    // axis labels.
+    p, err := plot.New()
+    if err != nil {
+      panic(err)
+    }
+    p.Title.Text = "Points Example"
+    p.X.Label.Text = "X"
+    p.Y.Label.Text = "Y"
+    p.Add(plotter.NewGrid())
+    for centId := range clusters {
+      totalNumMovies := len(clusters[centId])
+      scatterData := make(plotter.XYs, totalNumMovies)
+      for i, movieId := range clusters[centId] {
+        scatterData[i].X = featureMap[movieId][0]
+        scatterData[i].Y = featureMap[movieId][1]
+      }
+
+      scatterPlot, err := plotter.NewScatter(scatterData)
+      if err != nil {
+        panic(err)
+      }
+      scatterPlot.GlyphStyle.Color = color.RGBA{R: uint8(rand.Intn(255)), G: uint8(rand.Intn(255)), B: uint8(rand.Intn(255)), A: 255}
+      p.Add(scatterPlot)
     }
 
+    if err := p.Save(10*vg.Inch, 10*vg.Inch, "clusters.png"); err != nil {
+      panic(err)
+    }
   }
-  sum = divideArray(sum, 15382) // <<<<< change the num
-  return sum
 }
 
-func findKMeans(featureMap map[string][]float64, centroids map[int][]float64) map[int][]float64 {
+// func center(featureMap map[string][]float64) []float64 {
+//   var sum []float64
+//   for _, v := range featureMap {
+//     if len(sum) == 0 {
+//       sum = v
+//     } else {
+//       sum = sumArray(sum, v)
+//     }
+//
+//   }
+//   sum = divideArray(sum, 15382) // <<<<< change the num
+//   return sum
+// }
+
+func findKMeans(featureMap map[string][]float64, centroids map[int][]float64) (map[int][]float64, map[int][]string) {
   var currentCent = centroids
   var changeCent = true;
   var updatedCent map[int][]float64
@@ -111,15 +146,20 @@ func findKMeans(featureMap map[string][]float64, centroids map[int][]float64) ma
     } else {
       currentCent = updatedCent
     }
+
   }
-  fmt.Println(currentCent)
-  return currentCent
+
+  return currentCent, movieCentAssignment
+}
+
+func convertFloat(x float64) int {
+    return int(x * 1000)
 }
 
 func isEqual(currentCent, updatedCent map[int][]float64) bool {
   for k, v := range currentCent {
     for idx, val := range v {
-      if val != updatedCent[k][idx] {
+      if convertFloat(val) != convertFloat(updatedCent[k][idx]) {
         return false
       }
     }
@@ -173,8 +213,6 @@ func sumArray(prevSum, feature []float64) []float64 {
 
 func assigningClosetCent(featureMap map[string][]float64, centroids map[int][]float64) map[int][]string {
   var assigned map[int][]string
-  var minDist float64
-  var centID int
   var arr []string
 
   assigned = make(map[int][]string)
@@ -183,20 +221,22 @@ func assigningClosetCent(featureMap map[string][]float64, centroids map[int][]fl
     assigned[k] = arr
   }
 
-  for k1, v1 := range featureMap {
-    for k2, v2 := range centroids {
-      dist := getDistance(v1, v2)
+  for movieId, movieFeat := range featureMap {
+    var minDist float64
+    var centID int
+    for id, centPoint := range centroids {
+      dist := getDistance(movieFeat, centPoint)
       if minDist == 0 && centID == 0 || minDist > dist {
         minDist = dist
-        centID = k2
+        centID = id
       }
     }
     if len(assigned[centID]) != 0 {
       arr = assigned[centID]
-      arr = append(arr, k1)
+      arr = append(arr, movieId)
       assigned[centID] = arr
     } else {
-      arr := []string{k1}
+      arr := []string{movieId}
       assigned[centID] = arr
     }
   }

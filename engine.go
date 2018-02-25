@@ -70,7 +70,8 @@ func (re *RecommendEngine) ListenToInbound(queue chan *model.User) {
 			}
 		}
 
-		approximator := lowrank.NewFactorizer(R, featureDim)
+		approximator := lowrank.NewFactorizer(nil, featureDim)
+		approximator.Rating = R
 		approximator.MovieLatent = mat.NewDense(len(movies), featureDim, latentFeatures)
 		approximator.ApproximateUserLatent(300, 100, 0, 1e-5)
 

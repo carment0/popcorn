@@ -12,8 +12,6 @@ import (
 )
 
 const TEST_RATIO = 0.10
-const MAX_NUM_USER = 10000
-const CUTOFF_TIMESTAMP = 1167609600 // 01/01/2007
 
 type MatrixConverter struct {
 	MovieMap       map[int]*Movie
@@ -42,7 +40,7 @@ func NewMatrixConverter(ratingFilePath string, movieFilepath string) (*MatrixCon
 		return nil, loadErr
 	}
 
-	trainSet, loadErr = loadUserRatings(ratingFilePath, MAX_NUM_USER, CUTOFF_TIMESTAMP)
+	trainSet, loadErr = loadUserRatings(ratingFilePath)
 	if loadErr != nil {
 		return nil, loadErr
 	}

@@ -18,12 +18,14 @@ type Factorizer struct {
 	MatrixConverter *MatrixConverter
 }
 
-func NewFactorizer(R *mat.Dense, K int) *Factorizer {
+func NewFactorizer(converter *MatrixConverter, K int) *Factorizer {
+	R := converter.GetRatingMatrix()
 	I, J := R.Dims()
 	return &Factorizer{
-		UserLatent:  RandMat(I, K),
-		MovieLatent: RandMat(J, K),
-		Rating:      R,
+		UserLatent:      RandMat(I, K),
+		MovieLatent:     RandMat(J, K),
+		Rating:          R,
+		MatrixConverter: converter,
 	}
 }
 

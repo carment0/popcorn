@@ -5,6 +5,7 @@
 package lowrank
 
 import (
+	"errors"
 	"gonum.org/v1/gonum/mat"
 	"math"
 	"math/rand"
@@ -60,4 +61,26 @@ func AbsAverage(M *mat.Dense) float64 {
 	}
 
 	return sum / float64(I*J)
+}
+
+func DotProduct(vector1 []float64, vector2 []float64) (float64, error) {
+	var sum float64
+	if len(vector1) != len(vector2) {
+		return sum, errors.New("dimension mismatch")
+	}
+
+	for i := 0; i < len(vector1); i += 1 {
+		sum += vector1[i] * vector2[i]
+	}
+
+	return sum, nil
+}
+
+func RandVector(K int) []float64 {
+	vector := make([]float64, K)
+	for k := 0; k < K; k += 1 {
+		vector[k] = rand.Float64()
+	}
+
+	return vector
 }

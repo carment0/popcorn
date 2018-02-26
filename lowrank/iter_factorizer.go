@@ -93,6 +93,51 @@ type IterativeFactorizer struct {
 	TestRatingMap              map[int]map[int]float64
 }
 
+func (f *IterativeFactorizer) Train(steps int, epochSize int, reg float64, learnRate float64) {
+	for step := 0; step < steps; step += 1 {
+		var err error
+
+		if step%epochSize == 0 {
+			loss, rootMeanSqError, _ := f.Loss(reg)
+			logMessage := fmt.Sprintf(`iteration %3d: net loss %5.2f and RMSE %1.8f`, step, loss, rootMeanSqError)
+			logrus.WithField("file", "lowrank.approximator").Info(logMessage)
+		}
+
+		userGradMap := make(map[int][]float64)
+
+		// Compute gradients first, and then update
+		for userID := range f.UserLatentMap {
+			userGradMap[userID], err = f.GradientUserLatent(userID, reg)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		movieGradMap := make(map[int][]float64)
+
+		// Same here, always get all the gradients first before modifying the latent values
+		for movieID := range f.MovieLatentMap {
+			movieGradMap[movieID], err = f.GradientMovieLatent(movieID, reg)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		// Perform update
+		for userID := range f.UserLatentMap {
+			for k := 0; k < len(f.UserLatentMap[userID]); k += 1 {
+				f.UserLatentMap[userID][k] -= learnRate * userGradMap[userID][k]
+			}
+		}
+
+		for movieID := range f.MovieLatentMap {
+			for k := 0; k < len(f.MovieLatentMap[movieID]); k += 1 {
+				f.MovieLatentMap[movieID][k] -= learnRate * movieGradMap[movieID][k]
+			}
+		}
+	}
+}
+
 func (f *IterativeFactorizer) Loss(reg float64) (float64, float64, error) {
 	var loss float64
 	for userID := range f.TrainingUserMovieRatingMap {

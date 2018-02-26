@@ -8,9 +8,14 @@ import (
 	"github.com/sirupsen/logrus"
 	"gonum.org/v1/gonum/mat"
 	"popcorn/lowrank"
+	"time"
 )
 
-var isMatrix = flag.Bool("usematrix", true, "indicate whether training should be using matrices")
+var isVectorized = flag.Bool(
+	"vectorized",
+	true,
+	"indicate whether training should be vectorized, i.e. using matrices",
+)
 
 const InputDir = "datasets/100k/"
 const OutputDir = "datasets/100k/"
@@ -25,15 +30,21 @@ func init() {
 func main() {
 	flag.Parse()
 
-	if *isMatrix {
+	if *isVectorized {
 		converter, err := lowrank.NewMatrixConverter(InputDir+"ratings.csv", InputDir+"movies.csv")
 		if err != nil {
 			logrus.Fatal(err)
 		}
 		fact := lowrank.NewFactorizer(converter, FeatureDim)
 
+		startTime := time.Now()
+
 		// Start training
 		fact.Train(400, 10, 0.03, 1e-5)
+
+		endTime := time.Now()
+
+		logrus.Infof("Training took %s seconds", endTime.Sub(startTime))
 
 		J, _ := fact.MovieLatent.Dims()
 		featureMapByMovieID := make(map[int][]float64)
@@ -46,34 +57,21 @@ func main() {
 
 		writeFeaturesToCSV(OutputDir+"features.csv", featureMapByMovieID, FeatureDim)
 		writePopularityToCSV(OutputDir+"popularity.csv", converter.MovieMap)
-		return
-	}
+	} else {
+		var iterativeFact *lowrank.IterativeFactorizer
+		var err error
 
-	var iterativeFact *lowrank.IterativeFactorizer
-	var err error
-	var loss, rmse float64
+		iterativeFact, err = lowrank.NewIterativeFactorizer(InputDir+"ratings.csv", InputDir+"movies.csv", FeatureDim)
+		if err != nil {
+			logrus.Fatal(err)
+		}
 
-	iterativeFact, err = lowrank.NewIterativeFactorizer(InputDir+"ratings.csv", InputDir+"movies.csv", FeatureDim)
-	if err != nil {
-		logrus.Fatal(err)
-	}
+		startTime := time.Now()
 
-	loss, rmse, err = iterativeFact.Loss(0.03)
-	if err != nil {
-		logrus.Fatal(err)
-	}
+		iterativeFact.Train(400, 10, 0.03, 1e-5)
 
-	logrus.Warnf("Iterative: loss %.2f and RMSE %.2f", loss, rmse)
+		endTime := time.Now()
 
-	// Perform gradient check on all users
-	var discrepancy []float64
-	for userID := range iterativeFact.UserLatentMap {
-		discrepancy, err = iterativeFact.GradientCheckUserLatent(userID, 0.03, 1e-3)
-		logrus.Infof("Gradient check on user %d - %.10f", userID, discrepancy)
-	}
-
-	for movieID := range iterativeFact.MovieLatentMap {
-		discrepancy, err = iterativeFact.GradientCheckMovieLatent(movieID, 0.03, 1e-3)
-		logrus.Infof("Gradient check on movie %d - %.10f", movieID, discrepancy)
+		logrus.Infof("Training took %s seconds", endTime.Sub(startTime))
 	}
 }

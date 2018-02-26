@@ -14,8 +14,8 @@ import (
 	"strconv"
 )
 
-const LeastNumRatingPerUser = 100
-const MaxNumUser = 10000
+const LeastNumRatingPerUser = 200
+const MaxNumUser = 20000
 const CutoffTimestamp = 1167609600 // 01/01/2007
 
 type Movie struct {

@@ -91,7 +91,7 @@ func NewMatrixConverter(ratingFilePath string, movieFilepath string) (*MatrixCon
 
 	fmtString := "CSV data are loaded with %d training samples and %d test samples from %d users on %d movies"
 	logMessage := fmt.Sprintf(fmtString, trainSetCount, testSetCount, len(userIdToIndex), len(movieIdToIndex))
-	logrus.WithField("file", "lowrank.data_processor").Infof(logMessage)
+	logrus.WithField("file", "lowrank.matrix_converter").Infof(logMessage)
 
 	return &MatrixConverter{
 		MovieMap:       movieMap,

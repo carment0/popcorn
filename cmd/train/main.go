@@ -11,14 +11,21 @@ import (
 	"time"
 )
 
-var isVectorized = flag.Bool(
-	"vectorized",
-	true,
-	"indicate whether training should be vectorized, i.e. using matrices",
+var (
+	isVectorized = flag.Bool(
+		"vectorized",
+		true,
+		"indicate whether training should be vectorized, i.e. using matrices",
+	)
+	steps = flag.Int(
+		"steps",
+		0,
+		"number of steps for training",
+	)
 )
 
-const InputDir = "datasets/100k/"
-const OutputDir = "datasets/100k/"
+const InputDir = "datasets/26m/"
+const OutputDir = "datasets/production/"
 const FeatureDim = 10
 
 func init() {
@@ -40,7 +47,7 @@ func main() {
 		startTime := time.Now()
 
 		// Start training
-		fact.Train(400, 10, 0.03, 1e-5)
+		fact.Train(*steps, 10, 0.03, 1e-5)
 
 		endTime := time.Now()
 
@@ -68,10 +75,13 @@ func main() {
 
 		startTime := time.Now()
 
-		iterativeFact.Train(400, 10, 0.03, 1e-5)
+		iterativeFact.Train(*steps, 10, 0.03, 1e-5)
 
 		endTime := time.Now()
 
 		logrus.Infof("Training took %s seconds", endTime.Sub(startTime))
+
+		writeFeaturesToCSV(OutputDir+"features.csv", iterativeFact.MovieLatentMap, FeatureDim)
+		writePopularityToCSV(OutputDir+"popularity.csv", iterativeFact.MovieMap)
 	}
 }

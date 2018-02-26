@@ -60,14 +60,19 @@ func NewIterativeFactorizer(ratingFilePath, movieFilePath string, K int) (*Itera
 				trainSetCount += 1
 				trainingUserMovieRatingMap[userID][movieID] = trainSet[userID][movieID]
 				trainingMovieUserRatingMap[movieID][userID] = trainSet[userID][movieID]
+				movieMap[movieID].Ratings = append(movieMap[movieID].Ratings, trainSet[userID][movieID])
 			}
 		}
+	}
+
+	for movieID := range movieMap {
+		movieMap[movieID].AvgRating = Average(movieMap[movieID].Ratings)
 	}
 
 	fmtString := "CSV data are loaded with %d training samples and %d test samples from %d users on %d movies"
 	logMessage := fmt.Sprintf(
 		fmtString, trainSetCount, testSetCount, len(trainingUserMovieRatingMap), len(trainingMovieUserRatingMap))
-	logrus.WithField("file", "lowrank.iter_factorizer").Infof(logMessage)
+	logrus.WithField("file", "lowrank.iterative_factorizer").Infof(logMessage)
 
 	return &IterativeFactorizer{
 		MovieMap:                   movieMap,
@@ -100,7 +105,7 @@ func (f *IterativeFactorizer) Train(steps int, epochSize int, reg float64, learn
 		if step%epochSize == 0 {
 			loss, rootMeanSqError, _ := f.Loss(reg)
 			logMessage := fmt.Sprintf(`iteration %3d: net loss %5.2f and RMSE %1.8f`, step, loss, rootMeanSqError)
-			logrus.WithField("file", "lowrank.approximator").Info(logMessage)
+			logrus.WithField("file", "lowrank.iterative_factorizer").Info(logMessage)
 		}
 
 		userGradMap := make(map[int][]float64)

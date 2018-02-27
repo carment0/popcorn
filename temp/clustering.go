@@ -12,8 +12,7 @@ import (
   "gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
   "image/color"
-	// "gonum.org/v1/plot/plotutil"
-	"gonum.org/v1/plot/vg"
+ 	"gonum.org/v1/plot/vg"
 )
 
 func ReadFromCSV(filepath string) (map[string][]float64, error) {
@@ -76,8 +75,6 @@ func main() {
     fmt.Println("Failed to read CSV", err)
   } else {
     fmt.Println("Done reading")
-    // center := center(featureMap)
-    // fmt.Println(center)
     start := time.Now()
     movieIdKeys := movieIdKeys(featureMap)
     centroids := initCentroids(featureMap, movieIdKeys, 1000) // <<<<< changed the cluster
@@ -115,20 +112,6 @@ func main() {
     }
   }
 }
-
-// func center(featureMap map[string][]float64) []float64 {
-//   var sum []float64
-//   for _, v := range featureMap {
-//     if len(sum) == 0 {
-//       sum = v
-//     } else {
-//       sum = sumArray(sum, v)
-//     }
-//
-//   }
-//   sum = divideArray(sum, 15382) // <<<<< change the num
-//   return sum
-// }
 
 func findKMeans(featureMap map[string][]float64, centroids map[int][]float64) (map[int][]float64, map[int][]string) {
   var currentCent = centroids

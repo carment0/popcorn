@@ -4,7 +4,7 @@ import (
   "math"
 )
 
-const centCount = 100
+const centCount = 1000
 
 type MovieAssignments struct {
   Movie *Movie
@@ -22,6 +22,7 @@ func MovieClustering(movies []*Movie) []*MovieAssignments {
       })
     }
   }
+
   return assignedMovies
 }
 

@@ -7,8 +7,6 @@ import (
   "io"
 )
 
-const NumOfFeat = 2
-
 type Movie struct {
   MovieID string
   Feature []float64
@@ -20,7 +18,7 @@ func ReadFromCSV(filePath string) ([]*Movie, error) {
   csvFile, fileError := os.Open(filePath)
 
   if fileError != nil {
-    return movies, fileError
+    return nil, fileError
   }
 
   reader := csv.NewReader(csvFile)
@@ -33,45 +31,42 @@ func ReadFromCSV(filePath string) ([]*Movie, error) {
       }
     } else {
       var feature []float64
-      for i := 1; i <= NumOfFeat; i += 1 {
+      for i := 1; i < len(row); i += 1 {
         stringFeat := row[i]
         integer, err := strconv.ParseFloat(stringFeat, 64)
 
         if err != nil {
-          return movies, err
+          return nil, err
         }
-
         feature = append(feature, integer)
       }
 
       movies = append(movies, &Movie {
         MovieID: row[0],
         Feature: feature,
-
       })
     }
   }
-
   return movies, nil
 }
 
-// func WriteToCSV(filepath string, clustData map[string]int) error {
-//   csvFile, fileError := os.Create(filepath)
-//   if fileError != nil {
-//     return fileError
-//   }
-//
-//   writer := csv.NewWriter(csvFile)
-//   header := []string{"movieId", "centGroup"}
-//
-//   if err := writer.Write(header); err != nil {
-//     return err
-//   }
-//
-//   for k, v := range clustData {
-//     row := []string{k, strconv.Itoa(v)}
-//     writer.Write(row)
-//   }
-//   writer.Flush()
-//   return nil
-// }
+func WriteToCSV(filepath string, clustData []*MovieAssignments) error {
+  csvFile, fileError := os.Create(filepath)
+  if fileError != nil {
+    return fileError
+  }
+
+  writer := csv.NewWriter(csvFile)
+  header := []string{"movieId", "centGroup"}
+
+  if err := writer.Write(header); err != nil {
+    return err
+  }
+
+  for _, movie := range clustData {
+    row := []string{movie.Movie.MovieID, strconv.Itoa(movie.Centroid.ClusterID)}
+    writer.Write(row)
+  }
+  writer.Flush()
+  return nil
+}

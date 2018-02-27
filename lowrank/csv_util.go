@@ -9,9 +9,14 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"strconv"
 )
+
+const LeastNumRatingPerUser = 200
+const MaxNumUser = 20000
+const CutoffTimestamp = 1167609600 // 01/01/2007
 
 type Movie struct {
 	ID        int       `json:"id"`
@@ -21,7 +26,7 @@ type Movie struct {
 }
 
 // loadMovies will return f map that maps movie id to the title of the movie. We don't really care about meta
-// information of the movies. We only want to know the mapping of matrix indices to movie ids.
+// information of the movies.
 func loadMovies(filepath string) (map[int]*Movie, error) {
 	if csvFile, fileErr := os.Open(filepath); fileErr != nil {
 		return nil, fileErr
@@ -65,7 +70,8 @@ func loadMovies(filepath string) (map[int]*Movie, error) {
 //     movieID: 3.5
 //   }
 // }
-func loadUserRatings(filepath string, userMaxNum int, cutoffTimestamp int) (map[int]map[int]float64, error) {
+func loadUserRatings(filepath string) (map[int]map[int]float64, error) {
+	rand.Seed(0)
 	if csvFile, fileErr := os.Open(filepath); fileErr != nil {
 		return nil, fileErr
 	} else {
@@ -109,7 +115,7 @@ func loadUserRatings(filepath string, userMaxNum int, cutoffTimestamp int) (map[
 				continue
 			}
 
-			if int(timestamp) < cutoffTimestamp {
+			if int(timestamp) < CutoffTimestamp {
 				continue
 			}
 
@@ -123,11 +129,11 @@ func loadUserRatings(filepath string, userMaxNum int, cutoffTimestamp int) (map[
 		// We are only interested in users who have rated at least 300 movies.
 		reducedMap := make(map[int]map[int]float64)
 		for userId := range ratingsByUserID {
-			if len(ratingsByUserID[userId]) > 300 {
+			if len(ratingsByUserID[userId]) > LeastNumRatingPerUser {
 				reducedMap[userId] = ratingsByUserID[userId]
 			}
 
-			if len(reducedMap) == userMaxNum {
+			if len(reducedMap) == MaxNumUser {
 				break
 			}
 		}

@@ -18,12 +18,14 @@ type Factorizer struct {
 	MatrixConverter *MatrixConverter
 }
 
-func NewFactorizer(R *mat.Dense, K int) *Factorizer {
+func NewFactorizer(converter *MatrixConverter, K int) *Factorizer {
+	R := converter.GetRatingMatrix()
 	I, J := R.Dims()
 	return &Factorizer{
-		UserLatent:  RandMat(I, K),
-		MovieLatent: RandMat(J, K),
-		Rating:      R,
+		UserLatent:      RandMat(I, K),
+		MovieLatent:     RandMat(J, K),
+		Rating:          R,
+		MatrixConverter: converter,
 	}
 }
 
@@ -136,7 +138,7 @@ func (f *Factorizer) Train(steps int, epochSize int, reg float64, learnRate floa
 				logMessage = fmt.Sprintf(`iteration %3d: net loss %5.2f and RMSE %1.8f`, step, loss, rootMeanSqError)
 			}
 
-			logrus.WithField("file", "lowrank.approximator").Info(logMessage)
+			logrus.WithField("file", "lowrank.factorizer").Info(logMessage)
 		}
 
 		if GradU, GradM, err := f.Gradients(reg); err == nil {
@@ -168,7 +170,7 @@ func (f *Factorizer) ApproximateUserLatent(steps int, epochSize int, reg float64
 				)
 			}
 
-			logrus.WithField("file", "lowrank.approximator").Info(logMessage)
+			logrus.WithField("file", "lowrank.factorizer").Info(logMessage)
 		}
 
 		if GradU, _, err := f.Gradients(reg); err == nil {

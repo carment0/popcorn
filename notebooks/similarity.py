@@ -2,7 +2,7 @@ import csv
 import numpy as np
 
 
-DIR = '../dataset/'
+DIR = '../datasets/26m/'
 
 
 def cosine_similarity(a, b):
@@ -26,14 +26,14 @@ def main():
             movies[movie_id] = title
 
     features = dict()
-    with open('old_alg_features.csv', 'rb') as csvfile:
+    with open('../datasets/production/features.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         next(reader, None)  # Skip the header
         for row in reader:
             movie_id = row[0]
             features[movie_id] = np.array(row[1:], dtype=float)
 
-    chosen_id = '1'
+    chosen_id = '1020'
 
     distances = []
     for key in features:

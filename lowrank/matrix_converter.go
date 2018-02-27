@@ -12,8 +12,6 @@ import (
 )
 
 const TEST_RATIO = 0.10
-const MAX_NUM_USER = 10000
-const CUTOFF_TIMESTAMP = 1167609600 // 01/01/2007
 
 type MatrixConverter struct {
 	MovieMap       map[int]*Movie
@@ -42,7 +40,7 @@ func NewMatrixConverter(ratingFilePath string, movieFilepath string) (*MatrixCon
 		return nil, loadErr
 	}
 
-	trainSet, loadErr = loadUserRatings(ratingFilePath, MAX_NUM_USER, CUTOFF_TIMESTAMP)
+	trainSet, loadErr = loadUserRatings(ratingFilePath)
 	if loadErr != nil {
 		return nil, loadErr
 	}
@@ -93,7 +91,7 @@ func NewMatrixConverter(ratingFilePath string, movieFilepath string) (*MatrixCon
 
 	fmtString := "CSV data are loaded with %d training samples and %d test samples from %d users on %d movies"
 	logMessage := fmt.Sprintf(fmtString, trainSetCount, testSetCount, len(userIdToIndex), len(movieIdToIndex))
-	logrus.WithField("file", "lowrank.data_processor").Infof(logMessage)
+	logrus.WithField("file", "lowrank.matrix_converter").Infof(logMessage)
 
 	return &MatrixConverter{
 		MovieMap:       movieMap,

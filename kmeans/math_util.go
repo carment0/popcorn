@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Popcorn
+// Author(s) Carmen To
 package kmeans
 
 func Divide(sum[]float64, num int) []float64 {

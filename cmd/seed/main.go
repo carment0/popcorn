@@ -94,7 +94,7 @@ func main() {
 
 		if dict, ok := moviePopularityMap[movieID]; ok {
 			movie.AverageRating = dict["avg_rating"]
-			movie.NumRating = int(dict["num_rating"])
+			movie.NumRating = int(dict["num_rating"]) //<<<<<<<<
 		}
 
 		if dict, ok := metadataMap[movieID]; ok {
@@ -115,3 +115,5 @@ func main() {
 
 	logrus.Infof("Completed seeding %d movies", count)
 }
+
+// seed and and handler to fetch from db

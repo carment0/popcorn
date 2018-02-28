@@ -1,5 +1,5 @@
 // Copyright (c) 2018 Popcorn
-// Author(s) Calvin Feng
+// Author(s) Calvin Feng, Carmen To
 
 package model
 
@@ -27,6 +27,7 @@ type Movie struct {
 	// NumRating is the number of ratings of this movie received from MovieLens dataset, while average rating is the
 	// average of all the ratings received from MovieLens users.
 	NumRating     int             `gorm:"type:integer"  json:"num_rating"`
+	ClusterID     int             `gorm:"type:integer"  json:"cluster_id"`
 	AverageRating float64         `gorm:"type:float8"   json:"average_rating"`
 	Feature       pq.Float64Array `gorm:"type:float8[]" json:"-"`
 

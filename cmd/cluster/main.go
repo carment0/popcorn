@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Popcorn
+// Author(s) Carmen To
 package main
 
 import (

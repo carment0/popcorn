@@ -1,5 +1,5 @@
 // Copyright (c) 2018 Popcorn
-// Author(s) Calvin Feng
+// Author(s) Calvin Feng, Carmen To
 
 package main
 
@@ -47,6 +47,7 @@ func main() {
 	var moviePopularityMap map[uint]map[string]float64
 	var featuresMap map[uint][]float64
 	var metadataMap map[uint]map[string]string
+	var movieClusterMap map[uint]uint
 	var loadError error
 
 	movieModelsMap, loadError = loadMoviesCSVFile(DIR + "movies.csv")
@@ -80,6 +81,13 @@ func main() {
 		logrus.Info("Movie features are loaded from csv files")
 	}
 
+	movieClusterMap, loadError = loadMovieClusterCSVFile(DIR + "clusters.csv")
+	if loadError != nil {
+		logrus.Error("Failed to load movie clusters from CSV data:", loadError)
+	} else  {
+		logrus.Info("Movie clusters are loaded from csv files")
+	}
+
 	if db.HasTable(&model.Movie{}) {
 		db.DropTable(&model.Movie{})
 		logrus.Info("Existing \"movies\" table is dropped")
@@ -100,6 +108,12 @@ func main() {
 		if dict, ok := metadataMap[movieID]; ok {
 			movie.IMDBID = dict["imdb"]
 			movie.TMDBID = dict["tmdb"]
+		}
+
+		if movieClusterMap != nil {
+			if value, ok := movieClusterMap[movieID]; ok {
+				movie.ClusterID = value
+			}
 		}
 
 		if featuresMap != nil {

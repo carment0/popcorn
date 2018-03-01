@@ -1,5 +1,5 @@
 // Copyright (c) 2018 Popcorn
-// Author(s) Calvin Feng
+// Author(s) Calvin Feng, Carmen To
 
 package main
 
@@ -197,5 +197,45 @@ func loadMoviesCSVFile(filepath string) (map[uint]*model.Movie, error) {
 		return movieById, nil
 	} else {
 		return nil, err
+	}
+}
+
+func loadMovieClusterCSVFile(filepath string) (map[uint]uint, error) {
+	if csvFile, err := os.Open(filepath); err != nil {
+		return nil, err
+	} else {
+		reader := csv.NewReader(bufio.NewReader(csvFile))
+		movieByCluster := make(map[uint]uint)
+		for {
+			var row []string
+			var readerErr error
+			row, readerErr = reader.Read()
+
+			if readerErr != nil {
+				if readerErr == io.EOF {
+					break
+				} else {
+					fmt.Printf("Unexpected reader error: %v\n", readerErr)
+					continue
+				}
+			}
+
+			var movieID, clusterID uint64
+			var parseErr error
+
+			movieID, parseErr = strconv.ParseUint(row[0], 10, 64)
+			if parseErr != nil {
+				continue
+			}
+
+			clusterID, parseErr = strconv.ParseUint(row[1], 10, 64)
+			if parseErr != nil {
+				continue
+			}
+
+			movieByCluster[uint(movieID)] = uint(clusterID)
+		}
+
+		return movieByCluster, nil
 	}
 }

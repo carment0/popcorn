@@ -1,5 +1,5 @@
 // Copyright (c) 2018 Popcorn
-// Author(s) Calvin Feng
+// Author(s) Calvin Feng, Carmen To
 
 package handler
 
@@ -32,10 +32,9 @@ func NewMovieRecommendationHandler(db *gorm.DB) http.HandlerFunc {
 		for key, val := range reqData.Ratings {
 			fmt.Printf("User rated movie %d with %.2f\n", key, val)
 		}
-		// Wait for Carmen's implementation...
-		// The following logic does not actually recommend anything. It only finds the movie in the database and return
-		// back whatever movie the user has rated. Also get rid of this as soon as possible. Making multiple SQL queries
-		// is very inefficient.
+
+//<<<<<<<<
+
 		var movies []*model.Movie
 		if err := db.Limit(10).Order("year desc").Find(&movies).Error; err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)

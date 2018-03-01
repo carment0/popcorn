@@ -207,7 +207,11 @@ func loadMovieClusterCSVFile(filepath string) (map[uint]uint, error) {
 		reader := csv.NewReader(bufio.NewReader(csvFile))
 		movieByCluster := make(map[uint]uint)
 		for {
-			if row, renderErr := reader.Read(); readerErr != nil {
+			var row []string
+			var readerErr error
+			row, readerErr = reader.Read()
+
+			if readerErr != nil {
 				if readerErr == io.EOF {
 					break
 				} else {
@@ -216,20 +220,20 @@ func loadMovieClusterCSVFile(filepath string) (map[uint]uint, error) {
 				}
 			}
 
-			var movieID, clusterID int64
+			var movieID, clusterID uint64
 			var parseErr error
 
-			movieID, parseErr = strconv.ParseUint(rowRecord[0], 10, 64)
+			movieID, parseErr = strconv.ParseUint(row[0], 10, 64)
 			if parseErr != nil {
 				continue
 			}
 
-			clusterID, parseErr = strconv.ParseUint(rowRecord[1], 10, 64)
+			clusterID, parseErr = strconv.ParseUint(row[1], 10, 64)
 			if parseErr != nil {
 				continue
 			}
 
-			movieByCluster[movieID] = clusterID
+			movieByCluster[uint(movieID)] = uint(clusterID)
 		}
 
 		return movieByCluster, nil

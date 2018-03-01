@@ -6,7 +6,7 @@ import (
   "math"
 )
 
-const centCount = 4500
+const centCount = 450
 
 type MovieAssignments struct {
   Movie *Movie

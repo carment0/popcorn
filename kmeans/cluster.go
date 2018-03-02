@@ -11,6 +11,8 @@ const centCount = 450
 type MovieAssignments struct {
   Movie *Movie
   Centroid *Centroid
+  ClosestClusters []*Centroid
+  FarthestClusters []*Centroid
 }
 
 func MovieClustering(movies []*Movie) []*MovieAssignments {
@@ -21,6 +23,7 @@ func MovieClustering(movies []*Movie) []*MovieAssignments {
       assignedMovies = append(assignedMovies, &MovieAssignments{
         Movie: movie,
         Centroid: cluster.Centroid,
+
       })
     }
   }

@@ -71,8 +71,8 @@ func WriteToCSV(filepath string, clustData []*MovieAssignments) error {
       row = append(row, strconv.Itoa(closest.ClusterID))
     }
 
-    for _, furthest := range movie.FurthestClusters {
-      row = append(row, strconv.Itoa(furthest.ClusterID))
+    for _, farthest := range movie.FarthestClusters {
+      row = append(row, strconv.Itoa(farthest.ClusterID))
     }
     writer.Write(row)
   }

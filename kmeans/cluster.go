@@ -5,7 +5,6 @@ package kmeans
 import (
   "math"
   "sort"
-  "fmt"
 )
 
 const centCount = 450
@@ -14,7 +13,7 @@ type MovieAssignments struct {
   Movie *Movie
   Centroid *Centroid
   ClosestClusters []*Centroid
-  FurthestClusters []*Centroid
+  FarthestClusters []*Centroid
 }
 
 func MovieClustering(movies []*Movie) []*MovieAssignments {
@@ -25,13 +24,13 @@ func MovieClustering(movies []*Movie) []*MovieAssignments {
   for _, cluster := range clustering {
     sortedCentroid := sortedCentriodByDistance(cluster, clustering)
     closest := sortedCentroid[0:4]
-    furthest := sortedCentroid[len(sortedCentroid)-4:]
+    farthest := sortedCentroid[len(sortedCentroid)-4:]
     for _, movie := range cluster.MovieList {
       assignedMovies = append(assignedMovies, &MovieAssignments{
         Movie: movie,
         Centroid: cluster.Centroid,
         ClosestClusters: closest,
-        FurthestClusters: furthest,
+        FarthestClusters: farthest,
       })
     }
   }
@@ -57,8 +56,6 @@ func sortedCentriodByDistance(mainCluster *Cluster, clusterGroup []*Cluster) []*
     if k != 0 {
       cent := clusterDistance[k].Centroid
       sortedCentroid = append(sortedCentroid, cent)
-      fmt.Println("sorted dist: ", k)
-      fmt.Println("sorted id: ", cent.ClusterID)
     }
   }
   return sortedCentroid

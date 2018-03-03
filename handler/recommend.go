@@ -33,12 +33,8 @@ func NewMovieRecommendationHandler(db *gorm.DB) http.HandlerFunc {
 			fmt.Printf("User rated movie %d with %.2f\n", key, val)
 		}
 
-		// if rated 3 and above we want to get the cluster and the neighbor cluster and sort them by how close they are to the rated movie
-		// if rated 2.5 and below the furthest movies from the cluster
-		// best way to the do the following above is for each cluster sort from closest to furthest in an array!
-		
-		// how many movie returned back? depends are on how many movies they reviewed divided by the max
-		// use a set to get unqiue movies
+
+
 
 		var movies []*model.Movie
 		if err := db.Limit(10).Order("year desc").Find(&movies).Error; err != nil {

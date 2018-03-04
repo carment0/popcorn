@@ -7,7 +7,7 @@
 import { combineReducers } from 'redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
-import logger from 'redux-logger';
+// import logger from 'redux-logger';
 
 // Reducers
 import errorReducer from './errors';
@@ -41,4 +41,4 @@ if (window.currentUser) {
   delete window.currentUser;
 }
 
-export default createStore(rootReducer, preloadedState, applyMiddleware(thunk, logger));
+export default createStore(rootReducer, preloadedState, applyMiddleware(thunk));

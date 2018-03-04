@@ -13,7 +13,7 @@ import RatingRecord from '../components/rating_record';
 import RecommendationIndex from '../components/recommender/recommendation_index';
 
 // Store imports
-import { allMoviesFetch, personalizedRecommendedMoviesFetch } from '../store/movies/movie.action';
+import { allMoviesFetch, personalizedRecommendedMoviesFetch, recommendedMoviesFetch } from '../store/movies/movie.action';
 
 // Style imports
 import './recommender.scss';
@@ -27,7 +27,8 @@ class Recommender extends React.Component {
     movieYearRange: PropTypes.object.isRequired,
     moviePopularityPercentile: PropTypes.number.isRequired,
     dispatchAllMovieFetch: PropTypes.func.isRequired,
-    dispatchPersonalizedRecommendedMoviesFetch: PropTypes.func.isRequired
+    dispatchPersonalizedRecommendedMoviesFetch: PropTypes.func.isRequired,
+    dispatchRecommendedMoviesFetch: PropTypes.func.isRequired,
   };
 
   componentWillReceiveProps(nextProps) {
@@ -56,6 +57,13 @@ class Recommender extends React.Component {
         );
       }
     }
+
+    this.props.dispatchRecommendedMoviesFetch(
+      nextProps.movieYearRange,
+      nextProps.moviePopularityPercentile,
+      nextProps.movies.skipped,
+      this.props.movieRatings
+    );
   }
 
   componentDidMount() {
@@ -64,12 +72,21 @@ class Recommender extends React.Component {
     }
 
     if (Object.keys(this.props.movieRatings).length >= 10) {
-      this.props.dispatchPersonalizedRecommendedMoviesFetch(
-        this.props.session,
-        this.props.movieYearRange,
-        this.props.moviePopularityPercentile,
-        this.props.movies.skipped
-      );
+      if (this.props.session.currentUser !== null) {
+        this.props.dispatchPersonalizedRecommendedMoviesFetch(
+          this.props.session,
+          this.props.movieYearRange,
+          this.props.moviePopularityPercentile,
+          this.props.movies.skipped
+        );
+      } else {
+        this.props.dispatchRecommendedMoviesFetch(
+          this.props.movieYearRange,
+          this.props.moviePopularityPercentile,
+          this.props.movies.skipped,
+          this.props.movieRatings
+        );
+      }
     }
   }
 
@@ -106,6 +123,9 @@ const mapDispatchToProps = (dispatch) => ({
   dispatchAllMovieFetch: () => dispatch(allMoviesFetch()),
   dispatchPersonalizedRecommendedMoviesFetch: (session, yearRange, percentile, skipped) => {
     return dispatch(personalizedRecommendedMoviesFetch(session, yearRange, percentile, skipped));
+  },
+  dispatchRecommendedMoviesFetch: (yearRange, percentile, skipped, ratings) => {
+    return dispatch(recommendedMoviesFetch(yearRange, percentile, skipped, ratings));
   }
 });
 

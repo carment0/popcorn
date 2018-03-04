@@ -13,32 +13,221 @@ import (
 	"net/http"
 	"popcorn/model"
 	"time"
+	"strconv"
+	"sort"
 )
 
-type RecommendRequest struct {
-	Ratings map[uint]float64
+type RecommendRequestPayload struct {
+	MaxYear    uint   						`json:"max"`
+	MinYear    uint   						`json:"min"`
+	Percentile uint   						`json:"percent"`
+	Skipped    []uint 						`json:"skipped"`
+	Ratings 	 map[uint]float64		`json:"ratings"`
+}
+
+type ClusterCount struct {
+	ClusterID string
+	Count 		int
 }
 
 func NewMovieRecommendationHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
-		var reqData RecommendRequest
-		if err := decoder.Decode(&reqData); err != nil {
+
+		var payload RecommendRequestPayload
+		if err := decoder.Decode(&payload); err != nil {
 			RenderError(w, "Failed to parse request JSON into struct", http.StatusInternalServerError)
 			return
 		}
 
-		for key, val := range reqData.Ratings {
-			fmt.Printf("User rated movie %d with %.2f\n", key, val)
+		// set years
+		var maxYear uint = 2018
+		var minYear uint = 1930
+		if payload.MaxYear != 0 {
+			maxYear = payload.MaxYear
 		}
 
-		var movies []*model.Movie
-		if err := db.Limit(10).Order("year desc").Find(&movies).Error; err != nil {
+		if payload.MinYear != 0 {
+			minYear = payload.MinYear
+		}
+
+		// sort the user's rated movies from low, mid and high
+		// map with movies are low, mid and high
+		movieRatings := map[uint]string{}
+		ratedMovieIDs := []uint{}
+		for movieID, rating := range payload.Ratings {
+			ratedMovieIDs = append(ratedMovieIDs, movieID)
+			if rating < 2.5 {
+				movieRatings[movieID] = "low"
+			} else if rating > 3.5 {
+				movieRatings[movieID] = "high"
+			} else {
+				movieRatings[movieID] = "mid"
+			}
+		}
+
+		// movies users skipped
+		skipped := map[uint]bool{}
+		for _, movieID := range payload.Skipped {
+			skipped[movieID] = true
+		}
+
+		// for popular filter
+		var movieCount int
+		if err := db.Model(&model.Movie{}).Count(&movieCount).Error; err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		if bytes, err := json.Marshal(movies); err != nil {
+		var percentage float64
+		switch payload.Percentile {
+		case 100:
+			percentage = 0.01
+		case 80:
+			percentage = 0.2
+		case 60:
+			percentage = 0.4
+		case 40:
+			percentage = 0.6
+		case 20:
+			percentage = 0.8
+		default:
+			percentage = 1.0
+		}
+
+		limit := int(float64(movieCount) * percentage)
+
+		// get all the rated movies from db to get the clusters
+		var ratedMovies []*model.Movie
+		if err := db.Where("id in (?)", ratedMovieIDs).
+			Find(&ratedMovies).Error; err != nil {
+			RenderError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// sort the cluster by user rating
+		lowRatedMovies := []string{}
+		highRatedMovies := []string{}
+
+		for _, value := range ratedMovies {
+			stringID := strconv.FormatUint(uint64(value.ClusterID), 10)
+			switch movieRatings[value.ID] {
+			case "high":
+				highRatedMovies = append(highRatedMovies, value.NearestClusters...)
+				highRatedMovies = append(highRatedMovies, stringID)
+			case "low":
+				lowRatedMovies = append(lowRatedMovies, value.FarthestClusters...)
+			}
+		}
+
+		// map populary of the cluster
+		clustermap := make(map[string]int)
+		for _, clusterId := range highRatedMovies {
+			if clustermap[clusterId] == 0 {
+				clustermap[clusterId] = 1
+			} else {
+				clustermap[clusterId] += 1
+			}
+		}
+
+		for _, clusterId := range lowRatedMovies {
+			if clustermap[clusterId] == 0 {
+				clustermap[clusterId] = 1
+			}
+		}
+
+		// sort clustercount struct by count
+		clusterCount := []ClusterCount{}
+		for k, v := range clustermap {
+			clusterCount = append(clusterCount, ClusterCount{
+				ClusterID: k,
+				Count:		 v,
+			})
+		}
+
+		sort.Slice(clusterCount[:], func(i, j int) bool {
+		  return clusterCount[i].Count > clusterCount[j].Count
+		})
+
+		// get the movies in each clustered ratings
+		var highMovies []*model.Movie
+		if err := db.Limit(limit).
+			Where("id in (?)", highRatedMovies).
+			Where("year >= ? and year <= ?", minYear, maxYear).
+			Order("num_rating desc").
+			Find(&highMovies).Error; err != nil {
+			RenderError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var lowMovies []*model.Movie
+		if len(highMovies) < 301 {
+			if err := db.Limit(limit).
+				Where("id in (?)", lowRatedMovies).
+				Where("year >= ? and year <= ?", minYear, maxYear).
+				Order("num_rating desc").
+				Find(&lowMovies).Error; err != nil {
+				RenderError(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		var movies []*model.Movie
+		movies = append(highMovies, lowMovies...)
+// filter doubles, skips, rated
+
+		var extraMovies []*model.Movie
+		if len(movies) < 301 {
+			diff := 301 - len(movies) + 200
+			if err := db.Limit(diff).
+				Where("year >= ? and year <= ?", minYear, maxYear).
+				Order("num_rating desc").
+				Find(&extraMovies).Error; err != nil {
+				RenderError(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			movies = append(movies, extraMovies...)
+		}
+
+		// delete doubles
+		recommendMap := make(map[*model.Movie]int)
+		for _, movie := range movies {
+			if recommendMap[movie] == 0 {
+				recommendMap[movie] = 1
+			}
+		}
+
+		uniqueMovies := []*model.Movie{}
+		for k, _ := range recommendMap {
+			uniqueMovies = append(uniqueMovies, k)
+		}
+
+		// delete skips and rated
+		tempRecommendations := make([]*model.Movie, 0, 300)
+		for _, movie := range uniqueMovies {
+			if len(tempRecommendations) == 299 { break }
+			if _, ok := movieRatings[movie.ID]; ok {
+			    continue
+			}
+			if _, ok := skipped[movie.ID]; ok {
+			    continue
+			}
+			tempRecommendations = append(tempRecommendations, movie)
+		}
+
+		// sort by cluster preference
+		recommendations := make([]*model.Movie, 0, 300)
+		for _, cluster := range clusterCount {
+			for _, movie := range tempRecommendations {
+				id, _ := strconv.ParseUint(cluster.ClusterID, 10, 32)
+				if uint(id) == movie.ClusterID {
+					recommendations = append(recommendations, movie)
+				}
+			}
+		}
+
+		fmt.Println("recommendations: ", len(recommendations))
+		if bytes, err := json.Marshal(recommendations); err != nil {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 		} else {
 			w.WriteHeader(http.StatusOK)

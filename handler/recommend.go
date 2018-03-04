@@ -137,19 +137,25 @@ func NewPersonalizedRecommendationHandler(db *gorm.DB) http.HandlerFunc {
 			RenderError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Printf("fetched %d movies\n", len(movies))
-		features := make([]float64, 0, len(movies))
+
+		movieFeatureData := make([]float64, 0, len(movies))
 		for _, movie := range movies {
-			features = append(features, movie.Feature...)
+			movieFeatureData = append(movieFeatureData, movie.Feature...)
 		}
 
 		// K represents the feature dimension
 		K := len(currentUser.Preference)
-		U := mat.NewDense(1, K, currentUser.Preference)
-		M := mat.NewDense(len(movies), K, features)
+		M := len(movies)
+		userMat := mat.NewDense(1, K, currentUser.Preference)
+		movieMat := mat.NewDense(M, K, movieFeatureData)
 
-		predictedRatings := mat.NewDense(1, len(movies), nil)
-		predictedRatings.Mul(U, M.T())
+		if K == 0 {
+			RenderError(w, "user has nil vector for latent preference", http.StatusInternalServerError)
+			return
+		}
+
+		predictedRatings := mat.NewDense(1, M, nil)
+		predictedRatings.Mul(userMat, movieMat.T())
 
 		// Fetch 10 recommendations randomly
 		rand.Seed(time.Now().UTC().UnixNano())

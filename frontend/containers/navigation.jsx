@@ -80,9 +80,9 @@ class Navigation extends React.Component {
 
   handleDialogClose = () => {
     this.setState({ dialogOpen: false, formType: '' });
-    // if (this.props.history.location.pathname !== '/recommend') {
-    //   this.props.history.push('recommend');
-    // }
+    if (this.props.history.location.pathname !== '/recommend') {
+      this.props.history.push('recommend');
+    }
   };
 
   createDialogOpenHandler = (formType) => () => {

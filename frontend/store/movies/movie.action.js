@@ -52,11 +52,22 @@ export const RECOMMENDED_MOVIES_FETCH_FAIL = 'RECOMMENDED_MOVIES_FETCH_FAIL';
 /**
  * General recommendations are for anonymouse users who are new to our site. This function requires a map of movie ID to
  * rating value submitted by the user.
+ * @param {object} yearRange
+ * @param {number} percentile
+ * @param {Set} skipped
  * @param {object} ratingMap
  * @returns {Promise}
  */
-export const recommendedMoviesFetch = (session, ratings) => (dispatch) => {
-  return request.post('api/movies/recommend', { ratings })
+export const recommendedMoviesFetch = (yearRange, percentile, skipped, ratings) => (dispatch) => {
+  const payload = {
+    max: yearRange.maxYear,
+    min: yearRange.minYear,
+    percent: percentile,
+    skipped: [...skipped],
+    ratings: ratings
+  };
+
+  return request.post('api/movies/recommend', payload)
     .then((res) => {
       return dispatch({
         type: RECOMMENDED_MOVIES_FETCH_SUCCESS,

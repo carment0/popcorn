@@ -13,13 +13,20 @@ import RatingRecord from '../components/rating_record';
 import RecommendationIndex from '../components/recommender/recommendation_index';
 
 // Store imports
-import { allMoviesFetch, personalizedRecommendedMoviesFetch } from '../store/movies/movie.action';
+import {
+  allMoviesFetch,
+  personalizedRecommendedMoviesFetch,
+  recommendedMoviesFetch
+} from '../store/movies/movie.action';
 
 // Style imports
 import './recommender.scss';
 
 
 class Recommender extends React.Component {
+  state = {
+    recommendedMovieChanged: 0,
+  }
   static propTypes = {
     session: PropTypes.object.isRequired,
     movies: PropTypes.object.isRequired,
@@ -27,10 +34,20 @@ class Recommender extends React.Component {
     movieYearRange: PropTypes.object.isRequired,
     moviePopularityPercentile: PropTypes.number.isRequired,
     dispatchAllMovieFetch: PropTypes.func.isRequired,
-    dispatchPersonalizedRecommendedMoviesFetch: PropTypes.func.isRequired
+    dispatchPersonalizedRecommendedMoviesFetch: PropTypes.func.isRequired,
+    dispatchRecommendedMoviesFetch: PropTypes.func.isRequired,
   };
 
   componentWillReceiveProps(nextProps) {
+    const numberOfRecommendationRated = Object.keys(nextProps.movieRatings).length !== Object.keys(this.props.movieRatings).length;
+    const numberOfRecommendationSkipped = nextProps.movies.skipped.size !== this.props.movies.skipped.size;
+
+    if (numberOfRecommendationRated || numberOfRecommendationSkipped) {
+      let num = this.state.recommendedMovieChanged;
+      num += 1;
+      this.setState({ recommendedMovieChanged: num });
+    }
+
     if (this.props.session.currentUser !== null) {
       // When user just signed in and fetched the stored ratings from database, fetch recommendations.
       if (Object.keys(this.props.movieRatings).length === 0 && Object.keys(nextProps.movieRatings).length >= 10) {
@@ -55,6 +72,28 @@ class Recommender extends React.Component {
           nextProps.movies.skipped
         );
       }
+    } else {
+      if (Object.keys(nextProps.movieRatings).length >= 10 && this.state.recommendedMovieChanged === 9) {
+        this.props.dispatchRecommendedMoviesFetch(
+          nextProps.movieYearRange,
+          nextProps.moviePopularityPercentile,
+          nextProps.movies.skipped,
+          nextProps.movieRatings
+        );
+      }
+
+      if (
+        this.props.movieYearRange.minYear !== nextProps.movieYearRange.minYear
+        || this.props.movieYearRange.maxYear !== nextProps.movieYearRange.maxYear
+        || this.props.moviePopularityPercentile !== nextProps.moviePopularityPercentile
+      ) {
+        this.props.dispatchRecommendedMoviesFetch(
+          nextProps.movieYearRange,
+          nextProps.moviePopularityPercentile,
+          nextProps.movies.skipped,
+          nextProps.movieRatings
+        );
+      }
     }
   }
 
@@ -64,12 +103,21 @@ class Recommender extends React.Component {
     }
 
     if (Object.keys(this.props.movieRatings).length >= 10) {
-      this.props.dispatchPersonalizedRecommendedMoviesFetch(
-        this.props.session,
-        this.props.movieYearRange,
-        this.props.moviePopularityPercentile,
-        this.props.movies.skipped
-      );
+      if (this.props.session.currentUser !== null) {
+        this.props.dispatchPersonalizedRecommendedMoviesFetch(
+          this.props.session,
+          this.props.movieYearRange,
+          this.props.moviePopularityPercentile,
+          this.props.movies.skipped
+        );
+      } else {
+        this.props.dispatchRecommendedMoviesFetch(
+          this.props.movieYearRange,
+          this.props.moviePopularityPercentile,
+          this.props.movies.skipped,
+          this.props.movieRatings
+        );
+      }
     }
   }
 
@@ -106,6 +154,9 @@ const mapDispatchToProps = (dispatch) => ({
   dispatchAllMovieFetch: () => dispatch(allMoviesFetch()),
   dispatchPersonalizedRecommendedMoviesFetch: (session, yearRange, percentile, skipped) => {
     return dispatch(personalizedRecommendedMoviesFetch(session, yearRange, percentile, skipped));
+  },
+  dispatchRecommendedMoviesFetch: (yearRange, percentile, skipped, ratings) => {
+    return dispatch(recommendedMoviesFetch(yearRange, percentile, skipped, ratings));
   }
 });
 

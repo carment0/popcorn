@@ -40,14 +40,14 @@ class Recommender extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const numberOfRecommendationRated = Object.keys(nextProps.movieRatings).length !== Object.keys(this.props.movieRatings).length;
-    const numberOfRecommendationSkipped = Object.keys(nextProps.movies.skipped).length !== Object.keys(this.props.movies.skipped).length;
+    const numberOfRecommendationSkipped = nextProps.movies.skipped.size !== this.props.movies.skipped.size;
 
     if (numberOfRecommendationRated || numberOfRecommendationSkipped) {
       let num = this.state.recommendedMovieChanged;
       num += 1;
       this.setState({ recommendedMovieChanged: num });
     }
-    console.log(this.state.recommendedMovieChanged);
+
     if (this.props.session.currentUser !== null) {
       // When user just signed in and fetched the stored ratings from database, fetch recommendations.
       if (Object.keys(this.props.movieRatings).length === 0 && Object.keys(nextProps.movieRatings).length >= 10) {
@@ -72,13 +72,28 @@ class Recommender extends React.Component {
           nextProps.movies.skipped
         );
       }
-    } else if (Object.keys(nextProps.movieRatings).length >= 10 && this.state.recommendedMovieChanged === 9) {
-      this.props.dispatchRecommendedMoviesFetch(
-        nextProps.movieYearRange,
-        nextProps.moviePopularityPercentile,
-        nextProps.movies.skipped,
-        this.props.movieRatings
-      );
+    } else {
+      if (Object.keys(nextProps.movieRatings).length >= 10 && this.state.recommendedMovieChanged === 9) {
+        this.props.dispatchRecommendedMoviesFetch(
+          nextProps.movieYearRange,
+          nextProps.moviePopularityPercentile,
+          nextProps.movies.skipped,
+          nextProps.movieRatings
+        );
+      }
+
+      if (
+        this.props.movieYearRange.minYear !== nextProps.movieYearRange.minYear
+        || this.props.movieYearRange.maxYear !== nextProps.movieYearRange.maxYear
+        || this.props.moviePopularityPercentile !== nextProps.moviePopularityPercentile
+      ) {
+        this.props.dispatchRecommendedMoviesFetch(
+          nextProps.movieYearRange,
+          nextProps.moviePopularityPercentile,
+          nextProps.movies.skipped,
+          nextProps.movieRatings
+        );
+      }
     }
   }
 

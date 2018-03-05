@@ -11,22 +11,22 @@ import (
 	"math/rand"
 	"net/http"
 	"popcorn/model"
-	"time"
-	"strconv"
 	"sort"
+	"strconv"
+	"time"
 )
 
 type RecommendRequestPayload struct {
-	MaxYear    uint   						`json:"max"`
-	MinYear    uint   						`json:"min"`
-	Percentile uint   						`json:"percent"`
-	Skipped    []uint 						`json:"skipped"`
-	Ratings 	 map[uint]float64		`json:"ratings"`
+	MaxYear    uint             `json:"max"`
+	MinYear    uint             `json:"min"`
+	Percentile uint             `json:"percent"`
+	Skipped    []uint           `json:"skipped"`
+	Ratings    map[uint]float64 `json:"ratings"`
 }
 
 type ClusterCount struct {
 	ClusterID string
-	Count 		int
+	Count     int
 }
 
 func NewMovieRecommendationHandler(db *gorm.DB) http.HandlerFunc {
@@ -112,31 +112,31 @@ func NewMovieRecommendationHandler(db *gorm.DB) http.HandlerFunc {
 			}
 		}
 
-		clustermap := make(map[string]int)
+		clusterMap := make(map[string]int)
 		for _, clusterId := range highRatedMovies {
-			if clustermap[clusterId] == 0 {
-				clustermap[clusterId] = 1
+			if clusterMap[clusterId] == 0 {
+				clusterMap[clusterId] = 1
 			} else {
-				clustermap[clusterId] += 1
+				clusterMap[clusterId] += 1
 			}
 		}
 
 		for _, clusterId := range lowRatedMovies {
-			if clustermap[clusterId] == 0 {
-				clustermap[clusterId] = 1
+			if clusterMap[clusterId] == 0 {
+				clusterMap[clusterId] = 1
 			}
 		}
 
 		clusterCount := []ClusterCount{}
-		for k, v := range clustermap {
+		for k, v := range clusterMap {
 			clusterCount = append(clusterCount, ClusterCount{
 				ClusterID: k,
-				Count:		 v,
+				Count:     v,
 			})
 		}
 
 		sort.Slice(clusterCount[:], func(i, j int) bool {
-		  return clusterCount[i].Count > clusterCount[j].Count
+			return clusterCount[i].Count > clusterCount[j].Count
 		})
 
 		bestClusters := []string{}

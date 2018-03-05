@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/sirupsen/logrus"
 	"os"
 	"popcorn/model"
 )
@@ -23,9 +24,12 @@ func SetupDatabase() (*gorm.DB, error) {
 	dbCredentials := os.Getenv("DATABASE_URL")
 
 	if dbCredentials == "" {
+		logrus.WithField("src", "database").Warn("database credentials is not found in env")
 		dbCredentials = fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s",
 			LocalDBUser, LocalDBPassword, LocalDBName, LocalSSLMode,
 		)
+	} else {
+		logrus.WithField("src", "database").Infof("connecting to Postgres using %s", dbCredentials)
 	}
 
 	db, err := gorm.Open("postgres", dbCredentials)

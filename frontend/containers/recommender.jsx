@@ -13,13 +13,20 @@ import RatingRecord from '../components/rating_record';
 import RecommendationIndex from '../components/recommender/recommendation_index';
 
 // Store imports
-import { allMoviesFetch, personalizedRecommendedMoviesFetch, recommendedMoviesFetch } from '../store/movies/movie.action';
+import {
+  allMoviesFetch,
+  personalizedRecommendedMoviesFetch,
+  recommendedMoviesFetch
+} from '../store/movies/movie.action';
 
 // Style imports
 import './recommender.scss';
 
 
 class Recommender extends React.Component {
+  state = {
+    recommendedMovieChanged: 0,
+  }
   static propTypes = {
     session: PropTypes.object.isRequired,
     movies: PropTypes.object.isRequired,
@@ -32,6 +39,15 @@ class Recommender extends React.Component {
   };
 
   componentWillReceiveProps(nextProps) {
+    const numberOfRecommendationRated = Object.keys(nextProps.movieRatings).length !== Object.keys(this.props.movieRatings).length;
+    const numberOfRecommendationSkipped = Object.keys(nextProps.movies.skipped).length !== Object.keys(this.props.movies.skipped).length;
+
+    if (numberOfRecommendationRated || numberOfRecommendationSkipped) {
+      let num = this.state.recommendedMovieChanged;
+      num += 1;
+      this.setState({ recommendedMovieChanged: num });
+    }
+    console.log(this.state.recommendedMovieChanged);
     if (this.props.session.currentUser !== null) {
       // When user just signed in and fetched the stored ratings from database, fetch recommendations.
       if (Object.keys(this.props.movieRatings).length === 0 && Object.keys(nextProps.movieRatings).length >= 10) {
@@ -56,14 +72,14 @@ class Recommender extends React.Component {
           nextProps.movies.skipped
         );
       }
+    } else if (Object.keys(nextProps.movieRatings).length >= 10 && this.state.recommendedMovieChanged === 9) {
+      this.props.dispatchRecommendedMoviesFetch(
+        nextProps.movieYearRange,
+        nextProps.moviePopularityPercentile,
+        nextProps.movies.skipped,
+        this.props.movieRatings
+      );
     }
-
-    this.props.dispatchRecommendedMoviesFetch(
-      nextProps.movieYearRange,
-      nextProps.moviePopularityPercentile,
-      nextProps.movies.skipped,
-      this.props.movieRatings
-    );
   }
 
   componentDidMount() {

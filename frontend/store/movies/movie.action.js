@@ -64,7 +64,7 @@ export const recommendedMoviesFetch = (yearRange, percentile, skipped, ratings) 
     min: yearRange.minYear,
     percent: percentile,
     skipped: [...skipped],
-    rating: ratings
+    ratings: ratings
   };
 
   return request.post('api/movies/recommend', payload)

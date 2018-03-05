@@ -36,6 +36,8 @@ func main() {
 		)
 	}
 
+	dbCredentials = "postgres://rilofmsyhjfsqi:20bd7d6384cf697b4171ff6d2e2ea4d0ddc0c9347165552d9a531c4e4e0b4011@ec2-23-23-177-166.compute-1.amazonaws.com:5432/d59h51r6len1ta"
+
 	db, err := gorm.Open("postgres", dbCredentials)
 	if err != nil {
 		logrus.Fatal("Cannot connect to database for seeding:", err)

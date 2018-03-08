@@ -31,7 +31,7 @@ Thus, figuring out the latent features for movies and users has become a constra
 The idea of low rank factorization comes from singular value decomposition in linear algebra. It is difficult to show
 mathematics using GitHub markdown. The intuition of SVD technique is explained in this jupyter notebook:
 
-[Singular Value Decomposition](https://github.com/calvinfeng/low-rank-matrix-factorization/blob/master/low_rank_matrix_factorization.ipynb)
+[Singular Value Decomposition](https://github.com/calvinfeng/low-rank-matrix-factorization/blob/master/singular_value_decomposition.ipynb)
 
 How to apply low rank matrix factorization is explained in this notebook:
 

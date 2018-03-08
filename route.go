@@ -39,6 +39,7 @@ func LoadRoutes(db *gorm.DB, updateUserPreferenceQueue chan *model.User) http.Ha
 	api.Handle("/movies/details/{IMDBID}", handler.NewMovieDetailHandler(db)).Methods("GET")
 	api.Handle("/movies/trailers/{IMDBID}", handler.NewMovieTrailerHandler(db)).Methods("GET")
 	api.Handle("/movies", handler.NewMovieListHandler(db)).Methods("GET")
+	api.Handle("/movies/{id}", handler.NewMovieRetrieveHandler(db)).Methods("GET")
 
 	// Serve public folder to clients
 	muxRouter.PathPrefix("/").Handler(http.FileServer(http.Dir("public")))

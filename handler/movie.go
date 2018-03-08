@@ -30,6 +30,25 @@ func NewMovieListHandler(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+func NewMovieRetrieveHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		var movie model.Movie
+		if err := db.Where("id = ?", vars["id"]).Find(&movie).Error; err != nil {
+			RenderError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if bytes, err := json.Marshal(&movie); err != nil {
+			RenderError(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(http.StatusOK)
+			w.Write(bytes)
+		}
+	}
+}
+
 func NewPopularMovieListHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var movies []*model.Movie
@@ -48,11 +67,6 @@ func NewPopularMovieListHandler(db *gorm.DB) http.HandlerFunc {
 			w.Write(bytes)
 		}
 	}
-}
-
-type TMDBResponseData struct {
-	Status        int    `json:"status_code"`
-	StatusMessage string `json:"status_message"`
 }
 
 func NewMovieDetailHandler(db *gorm.DB) http.HandlerFunc {
@@ -93,9 +107,14 @@ func NewMovieDetailHandler(db *gorm.DB) http.HandlerFunc {
 			}
 
 			bodyBytes, _ := ioutil.ReadAll(res.Body)
-			var resData TMDBResponseData
-			if err := json.Unmarshal(bodyBytes, &resData); err == nil {
-				if resData.Status == 25 {
+			TMDBResponse := struct {
+				Status        int    `json:"status_code"`
+				StatusMessage string `json:"status_message"`
+			}{}
+			// There are times when too many requests are made to TMDB. We need a catch statement here to make sure that
+			// we don't store the error message into our database and treat it as actual movie detail data.
+			if err := json.Unmarshal(bodyBytes, &TMDBResponse); err == nil {
+				if TMDBResponse.Status == 25 {
 					logrus.WithField("src", "handler.movie").Error("reaching request limits")
 					RenderError(w, "request count is over the limit", http.StatusTooManyRequests)
 					return
@@ -161,6 +180,19 @@ func NewMovieTrailerHandler(db *gorm.DB) http.HandlerFunc {
 			}
 
 			bodyBytes, _ := ioutil.ReadAll(res.Body)
+			TMDBResponse := struct {
+				Status        int    `json:"status_code"`
+				StatusMessage string `json:"status_message"`
+			}{}
+			// There are times when too many requests are made to TMDB. We need a catch statement here to make sure that
+			// we don't store the error message into our database and treat it as actual movie detail data.
+			if err := json.Unmarshal(bodyBytes, &TMDBResponse); err == nil {
+				if TMDBResponse.Status == 25 {
+					logrus.WithField("src", "handler.movie").Error("reaching request limits")
+					RenderError(w, "request count is over the limit", http.StatusTooManyRequests)
+					return
+				}
+			}
 
 			trailer = model.MovieTrailer{
 				IMDBID: vars["IMDBID"],

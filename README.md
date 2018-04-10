@@ -1,5 +1,6 @@
 # Popcorn
 Wonder what movie to watch next with your friends and family? Use Popcorn to fetch movie recommendations!
+http://popcorn-go.herokuapp.com/
 
 ![popcorn](./docs/popcorn_screen_cap_1.png)
 
